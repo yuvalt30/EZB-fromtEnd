@@ -26,7 +26,7 @@ export default function Dashboard() {
       const res = await axios.post(
         "http://localhost:5000/transactions",
         {
-          section: sections,
+          section: subSections,
           amount,
           date,
           description,
@@ -62,7 +62,7 @@ export default function Dashboard() {
   );
 
   function sendData() {
-    if (sections && subSections[0] && date && amount && description) {
+    if (sections && subSections[0] && amount) {
       if (amount >= 0) {
         refetch();
       } else {
@@ -166,14 +166,14 @@ export default function Dashboard() {
             type={"date"}
             error={errors.date}
           >
-            Date
+            Date (optional)
           </Input>
           <Input
             onChange={(e) => setDescription(e.target.value)}
             value={description}
             error={errors.description}
           >
-            Description
+            Description (optional)
           </Input>
           <button onClick={sendData}>Submit</button>
         </div>
