@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [date, setDate] = useState();
   const [amount, setAmount] = useState();
   const [description, setDescription] = useState();
-  const user = useContext(Data);
+  const { user } = useContext(Data);
   const [errors, setErrors] = useState({});
 
   async function sendSections() {
@@ -117,7 +117,7 @@ export default function Dashboard() {
     }
   }
   const { sectionsArr, data } = useContext(Data);
-
+  console.log(data);
   useEffect(() => {
     if (isFetched) {
       Success("Completed");

@@ -13,33 +13,60 @@ import Budget from "./pages/Budget/Budget";
 import PlanBudget from "./pages/PlanBudget/PlanBudget";
 import { useSelector } from "react-redux";
 import Settings from "./pages/Settings/Settings";
+import axios from "axios";
 export const Data = createContext();
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState({});
-  const { sectionsArr, data, userRedux } = useSelector((state) => {
+  const [sections, setSections] = useState({
+    sectionsArr: [],
+    data: {},
+  });
+  let { sectionsArr, data, userRedux } = useSelector((state) => {
     return {
       sectionArr: state.sectionArr,
       data: state.data,
       userRedux: state.user,
     };
   });
-
   useEffect(() => {
     setUser(userRedux);
-
     if (localStorage.getItem("user")) {
       navigate("/", { replace: true });
       setUser(JSON.parse(localStorage.getItem("user")));
+      (async function () {
+        const sectionData = await axios.get(
+          "http://localhost:5000/users/sections",
+          {
+            headers: {
+              Authorization: `Bearer ${
+                JSON.parse(localStorage.getItem("user")).accessToken
+              }`,
+            },
+          }
+        );
+        setSections((p) => {
+          return {
+            ...p,
+            sectionsArr: sectionData.data.map((value) => {
+              return value._id;
+            }),
+            data: sectionData,
+          };
+        });
+        console.log(sectionsArr);
+      })();
     } else navigate("/sign-in", { replace: true });
   }, []);
 
   return (
     <>
       <ToastContainer />
-      <Data.Provider value={{ user, sectionsArr, data }}>
+      <Data.Provider
+        value={{ user, sectionsArr: sections.sectionsArr, data: sections.data }}
+      >
         <main>
           {location.pathname !== "/sign-in" && (
             <>

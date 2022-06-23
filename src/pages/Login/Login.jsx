@@ -40,6 +40,7 @@ export default function Login() {
       const sectionsArr = sectionData.data.map((value) => {
         return value._id;
       });
+
       dispatch(
         budgetActions.sectionArr({ sectionsArr, sectionData, user: data.data })
       );
