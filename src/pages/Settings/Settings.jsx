@@ -20,7 +20,7 @@ export default function Settings() {
   ];
   return (
     <div className="setting">
-      <Dropdown
+      {/* <Dropdown
         tittle={"Start From"}
         companyData={months}
         getIndex={(e) => {
@@ -30,7 +30,7 @@ export default function Settings() {
           setMonthNo(x.concat(arr.slice(0, e)));
         }}
         defaultValue={"Starts from"}
-      />
+      /> */}
       <Icon icon="ant-design:setting-filled" />
     </div>
   );
