@@ -7,7 +7,7 @@ import { monthNo } from "./Reflection";
 
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
-export default function SubSection({ setShow, data, monthIndex }) {
+export default function SubSectionIncome({ setShow, data, monthIndex }) {
   const [monthAVG, setMonthAVG] = useState(0);
   const [monthSum, setMonthSum] = useState([]);
   const [monthTotal, setMonthTotal] = useState(0);

@@ -23,9 +23,10 @@ import Income from "./Income";
 import { useSelector } from "react-redux";
 import { useContext } from "react";
 import { Data } from "../../App";
-import SubSection from "./SubSection";
+import SubSectionIncome from "./SubSectionIncome";
 import { ERROR } from "../../utils/toasts";
 import Settings from "../Settings/Settings";
+import SubSectionOutcome from "./SubSectionOutcome";
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -285,11 +286,22 @@ export default function Reflection() {
                   </div>
                 )}
                 {show === "sub-section" && (
-                  <SubSection
-                    monthIndex={monthIndex}
-                    data={subSectionData.data}
-                    setShow={setShow}
-                  />
+                  <>
+                    {subSectionData.data.income[0] && (
+                      <SubSectionIncome
+                        monthIndex={monthIndex}
+                        data={subSectionData.data}
+                        setShow={setShow}
+                      />
+                    )}
+                    {subSectionData.data.outcome[0] && (
+                      <SubSectionOutcome
+                        monthIndex={monthIndex}
+                        data={subSectionData.data}
+                        setShow={setShow}
+                      />
+                    )}
+                  </>
                 )}
                 {show === "line-chart" && (
                   <Line
