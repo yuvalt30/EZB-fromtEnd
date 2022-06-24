@@ -72,7 +72,7 @@ export default function Income({ setShow, data, monthIndex }) {
                   Execution in reality
                 </td>
                 {monthPercentage.map((value, i) => {
-                  return i === monthIndex && <td>{value}%</td>;
+                  return i <= monthIndex && <td>{value}%</td>;
                 })}
               </tr>
 
