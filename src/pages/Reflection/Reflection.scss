@@ -61,6 +61,7 @@
   top: 0;
   left: 0;
   flex-direction: column;
+  overflow-y: scroll;
 
   .choose_action {
     display: flex;
@@ -75,7 +76,7 @@
       column-gap: 20px;
       color: #000;
     }
-    svg {
+    & >svg {
       position: absolute;
       top: -5px;
       cursor: pointer;
@@ -101,6 +102,7 @@
     overflow: hidden;
     background: #fff;
   }
+  overflow-y:scroll;
 }
 
 .section_table,

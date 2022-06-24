@@ -24,13 +24,14 @@ function App() {
     sectionsArr: [],
     data: {},
   });
-  let { sectionsArr, data, userRedux } = useSelector((state) => {
+  let { userRedux } = useSelector((state) => {
     return {
       sectionArr: state.sectionArr,
       data: state.data,
       userRedux: state.user,
     };
   });
+
   useEffect(() => {
     setUser(userRedux);
     if (localStorage.getItem("user")) {
@@ -56,7 +57,6 @@ function App() {
             data: sectionData,
           };
         });
-        console.log(sectionsArr);
       })();
     } else navigate("/sign-in", { replace: true });
   }, []);

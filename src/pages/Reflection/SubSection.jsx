@@ -1,50 +1,64 @@
 import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
-import axios from "axios";
-export default function SubIncome({ setShow, data, monthIndex }) {
-  const [totalMonth, setTotalMonth] = useState([]);
+import { useDispatch, useSelector } from "react-redux";
+import { budgetActions } from "../../store";
+import Settings from "../Settings/Settings";
+import { monthNo } from "./Reflection";
+
+const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
+
+export default function SubSection({ setShow, data, monthIndex }) {
+  const [monthAVG, setMonthAVG] = useState(0);
   const [monthSum, setMonthSum] = useState([]);
   const [monthTotal, setMonthTotal] = useState(0);
-  const [performanceTotal, setPerformanceTotal] = useState([]);
-  const [monthAVG, setMonthAVG] = useState(0);
+  const [performanceTotal, setPerformanceTotal] = useState(0);
+  const [charts, setCharts] = useState([]);
+  const [sectionName, setSectionName] = useState([]);
+  const dispatch = useDispatch();
+  const { selectedSec } = useSelector((state) => {
+    return {
+      selectedSec: state.lineData.name,
+    };
+  });
+  useEffect(() => {
+    dispatch(budgetActions.incomeChart(charts));
+  }, [charts]);
 
   useEffect(() => {
-    (async function () {
-      try {
-        const res = await axios.get("http://localhost:5000/tracks/secA");
-        console.log(res);
-      } catch (err) {
-        console.log(err);
+    let percentageSum = 0;
+    data.income.forEach((value) => {
+      for (let i = 0; i <= monthIndex; i++) {
+        percentageSum += value.income[i];
       }
-    })();
-  }, []);
-
-  useEffect(() => {
-    data.income.forEach((value, i) => {
-      setTotalMonth((p) => [...p, value.income]);
-      i <= monthIndex && setMonthTotal((p) => (p += value.incomeBudget));
     });
-  }, []);
+    const monthAVGSum = percentageSum / (monthIndex + 1);
+    setMonthAVG(() =>
+      String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
+    );
+    setPerformanceTotal(percentageSum);
+  }, [monthIndex]);
 
   useEffect(() => {
-    const sum = [];
-    totalMonth.forEach((sub) => {
-      sub.forEach((num, index) => {
-        if (sum[index]) {
-          sum[index] += num;
-        } else {
-          sum[index] = num;
-        }
+    const monthBudget = [];
+    let monthSumTotal = 0;
+    data.income.forEach((value, i) => {
+      monthBudget.push(value.income);
+      monthSumTotal += value.incomeBudget;
+      setSectionName((p) => {
+        // dispatch(budgetActions.sectionName([...p, value.section]));
+        return [...p, value.section];
       });
     });
-    setMonthSum(sum);
-  }, [totalMonth]);
-  const id = useId();
+    setMonthTotal(monthSumTotal);
+    setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
+  }, []);
 
+  const id = useId();
   return (
     <>
+      {/* <Settings /> */}
       <div className="table">
-        <h2>Income</h2>
+        <h2>{selectedSec}</h2>
         <div className="fixTableHead">
           <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>
@@ -56,18 +70,9 @@ export default function SubIncome({ setShow, data, monthIndex }) {
                 <td className="execution" colSpan={3}>
                   Execution in reality
                 </td>
-                <td>101%</td>
-                <td>102%</td>
-                <td>103%</td>
-                <td>104%</td>
-                <td>105%</td>
-                <td>101%</td>
-                <td>102%</td>
-                <td>103%</td>
-                <td>104%</td>
-                <td>105%</td>
-                <td>104%</td>
-                <td>105%</td>
+                {monthPercentage.map((value, i) => {
+                  return i <= monthIndex && <td>{value}%</td>;
+                })}
               </tr>
 
               <tr>
@@ -78,26 +83,35 @@ export default function SubIncome({ setShow, data, monthIndex }) {
                 <td className="execution">Percentage</td>
                 <td className="execution">Performance</td>
                 <td className="execution">Month avg</td>
-                {/* {monthNo.map((value) => {
-                  return <td>value</td>;
-                })} */}
+                {monthNo.map((value, i) => {
+                  return (
+                    i <= monthIndex && (
+                      <td key={value} className="monthly_budget">
+                        {value}
+                      </td>
+                    )
+                  );
+                })}
               </tr>
             </thead>
 
             <tbody>
               {data.income.map((value, i) => {
+                let sum = 0;
+                for (let i = 0; i <= monthIndex; i++) {
+                  sum += value.income[i];
+                }
                 return (
                   <Row
                     value={value}
-                    total={{ monthTotal, setPerformanceTotal, monthAVG }}
+                    total={{ monthTotal }}
                     data={data.income}
                     setShow={setShow}
+                    performance={sum}
                     i={i}
                     key={"a" + i * 2}
                     monthIndex={monthIndex}
-                    performTotal={(e) => {
-                      setPerformanceTotal((p) => [...p, e]);
-                    }}
+                    chartData={setCharts}
                   />
                 );
               })}
@@ -105,17 +119,17 @@ export default function SubIncome({ setShow, data, monthIndex }) {
                 <td style={{ textDecoration: "none" }}>Total</td>
                 <td className="plan_budget_data">{monthTotal}</td>
                 <td className="plan_budget_data">{monthTotal * 12}</td>
-                <td className="plan_budget_data">1</td>
+                <td className="plan_budget_data">100%</td>
                 <td className="execution"></td>
-                <td className="execution">
-                  {performanceTotal.reduce((p, x) => p + x, 0)}
-                </td>
-                <td className="execution"></td>
-                {monthSum.map((value) => {
+                <td className="execution">{performanceTotal}</td>
+                <td className="execution">{monthAVG}</td>
+                {monthSum.map((value, i) => {
                   return (
-                    <td key={id + Math.random()} className="monthly_budget">
-                      {value}
-                    </td>
+                    i <= monthIndex && (
+                      <td key={id + Math.random()} className="monthly_budget">
+                        {value}
+                      </td>
+                    )
                   );
                 })}
               </tr>
@@ -127,25 +141,37 @@ export default function SubIncome({ setShow, data, monthIndex }) {
   );
 }
 
-export function Row({ setShow, value, total, monthIndex, performTotal }) {
-  const [performance, setPerformance] = useState(0);
+export function Row({
+  setShow,
+  value,
+  total,
+  monthIndex,
+  performance,
+  chartData,
+}) {
   const [percentage, setPercentage] = useState(0);
-  useEffect(() => {
-    let sum = 0;
-    for (let i = 0; i <= monthIndex; i++) {
-      sum += value.income[i];
-    }
-    setPerformance(sum);
-    performTotal(sum);
-    value.incomeBudget !== 0 &&
-      setPercentage((sum / (value.incomeBudget * 12)) * 100);
-  }, [monthIndex]);
+  const [monthAVG, setMonthAVG] = useState(0);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    setMonthAVG(performance / (monthIndex + 1));
+    chartData((p) => [
+      ...p,
+      performance !== 0 && value.incomeBudget
+        ? ((value.incomeBudget / performance) * 100).toFixed(2)
+        : 0,
+    ]);
+    value.incomeBudget !== 0 &&
+      setPercentage((performance / (value.incomeBudget * 12)) * 100);
+  }, [monthIndex]);
   return (
     <tr>
       <td
         onClick={() => {
-          setShow("line-chart");
+          setShow("show-date");
+          dispatch(
+            budgetActions.lineData({ name: value.section, subId: value._id })
+          );
         }}
       >
         {value.section}
@@ -165,19 +191,28 @@ export function Row({ setShow, value, total, monthIndex, performTotal }) {
           <Icon icon="ep:close-bold" />
         )}
       </td>
-      <td className="execution">{percentage.toFixed(2)}%</td>
+      <td
+        className={`execution ${
+          percentage > monthPercentage[monthIndex] ? "alert" : ""
+        }`}
+      >
+        {percentage.toFixed(2)}%
+      </td>
       <td className="execution">{performance}</td>
-      <td className="execution">100</td>
+      <td className="execution">{Math.round(monthAVG)}</td>
 
       {value.income.map((month, i, arr) => {
         return (
-          <td
-            className={`monthly_budget ${
-              month < value.incomeBudget ? "alert" : ""
-            }`}
-          >
-            {month}
-          </td>
+          i <= monthIndex && (
+            <td
+              key={month + Math.random()}
+              className={`monthly_budget ${
+                month > value.incomeBudget ? "alert" : ""
+              }`}
+            >
+              {month}
+            </td>
+          )
         );
       })}
     </tr>

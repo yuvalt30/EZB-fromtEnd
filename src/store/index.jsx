@@ -7,14 +7,26 @@ const budget = createSlice({
     data: {},
     user: {},
     sectionArr: [],
+    showStartFrom: false,
     outcome: {
       chart: [],
       name: [],
+    },
+    income: {
+      chart: [],
+      name: [],
+    },
+    lineData: {
+      name: "",
+      subId: "",
     },
   },
   reducers: {
     outcomeChart(state, { payload }) {
       state.outcome.chart = payload;
+    },
+    incomeChart(state, { payload }) {
+      state.income.chart = payload;
     },
     sectionName(state, { payload }) {
       state.outcome.name = payload;
@@ -23,6 +35,13 @@ const budget = createSlice({
       state.sectionArr = payload.sectionsArr;
       state.data = payload.sectionData;
       state.user = payload.user;
+    },
+    lineData(state, { payload }) {
+      state.lineData.name = payload.name;
+      state.lineData.subId = payload.subId;
+    },
+    showStart(state, { payload }) {
+      state.showStartFrom = payload;
     },
   },
 });

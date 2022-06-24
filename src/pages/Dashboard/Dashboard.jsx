@@ -117,7 +117,6 @@ export default function Dashboard() {
     }
   }
   const { sectionsArr, data } = useContext(Data);
-  console.log(data);
   useEffect(() => {
     if (isFetched) {
       Success("Completed");

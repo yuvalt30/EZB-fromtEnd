@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Reflection.scss";
-
 import {
   Chart as ChartJS,
   ArcElement,
@@ -21,11 +20,12 @@ import axios from "axios";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import Preloader from "../../components/Preloader/Preloader";
 import Income from "./Income";
-import SubIncome from "./SubSection";
 import { useSelector } from "react-redux";
-import Settings from "../Settings/Settings";
 import { useContext } from "react";
 import { Data } from "../../App";
+import SubSection from "./SubSection";
+import { ERROR } from "../../utils/toasts";
+import Settings from "../Settings/Settings";
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -38,17 +38,40 @@ ChartJS.register(
   Legend
 );
 
+export const monthNo = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 export default function Reflection() {
   const [show, setShow] = useState("");
   const [dates, setDates] = useState({ begin: "", end: "" });
-  const [chartData, setChartData] = useState([]);
   const [linesData, setLinesData] = useState([]);
   const { outcome } = useSelector((state) => {
     return { outcome: state.outcome };
   });
-  const { user } = useContext(Data);
+  const { selectedSec, subId } = useSelector((state) => {
+    return {
+      selectedSec: state.lineData.name,
+      subId: state.lineData.subId,
+    };
+  });
   async function getReflection() {
-    return await axios.get("http://localhost:5000/tracks");
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/tracks/?startMonth=${
+          JSON.parse(localStorage.getItem("user")).startMonth
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).accessToken
+            }`,
+          },
+        }
+      );
+      console.log(res);
+      return res;
+    } catch (err) {
+      ERROR(err.response.data);
+    }
   }
   const {
     data: reflection,
@@ -58,6 +81,29 @@ export default function Reflection() {
     refetchOnWindowFocus: false,
     enabled: true,
   });
+  const {
+    data: subSectionData,
+    isFetching: subSectionFetching,
+    refetch: subSectionFetch,
+  } = useQuery("sub-section-data", getSubsection, {
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
+
+  async function getSubsection() {
+    try {
+      return await axios.get(
+        `http://localhost:5000/tracks/sec?secName=${selectedSec}`
+      );
+    } catch (err) {
+      ERROR(err.response.data);
+    }
+  }
+  useEffect(() => {
+    if (selectedSec) {
+      subSectionFetch();
+    }
+  }, [selectedSec]);
 
   const data = {
     labels: outcome.name,
@@ -100,10 +146,10 @@ export default function Reflection() {
       `http://localhost:5000/tracks/past?begin=${dates.begin
         .split("-")
         .reverse()
-        .join("/")}&end=${dates.end
+        .join("/")}&subId=${subId}&end=${dates.end
         .split("-")
         .reverse()
-        .join("/")}&sectionName=${chartData.section}`
+        .join("/")}&sectionName=${selectedSec}`
     );
     setLinesData(res.data);
   }
@@ -142,26 +188,28 @@ export default function Reflection() {
     datasets: [
       {
         label: "Income",
-        data: linesData,
+        data: linesData.income,
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Outcome",
+        data: linesData.outcome,
+        borderColor: "#3549fd",
+        backgroundColor: "#3549fd78",
       },
     ],
   };
   const date = new Date();
   const [monthIndex, setMonthIndex] = useState(date.getMonth());
-  const monthArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const [monthNo, setMonthNo] = useState(monthArr);
-  if (isFetching) {
+  if (isFetching || gettingLineData || subSectionFetching) {
     return <Preloader />;
   }
-  if (gettingLineData) {
-    return <Preloader />;
-  }
+
   return (
     status === "success" && (
       <div className="container reflection">
-        {/* <Settings /> */}
+        <Settings />
         <div className="chart">
           <div>
             <Dropdown
@@ -189,16 +237,12 @@ export default function Reflection() {
             monthIndex={monthIndex}
             data={reflection.data}
             setShow={setShow}
-            getData={setChartData}
           />
           <SectionTable
             monthIndex={monthIndex}
             data={reflection.data}
             setShow={setShow}
-            getData={setChartData}
-            monthNo={monthNo}
           />
-          {/* <SubSection data={data} /> */}
         </div>
 
         {show && (
@@ -241,12 +285,10 @@ export default function Reflection() {
                   </div>
                 )}
                 {show === "sub-section" && (
-                  <SubIncome
-                    setShow={setShow}
+                  <SubSection
                     monthIndex={monthIndex}
-                    data={reflection.data}
-                    getData={setChartData}
-                    monthNo={monthNo}
+                    data={subSectionData.data}
+                    setShow={setShow}
                   />
                 )}
                 {show === "line-chart" && (

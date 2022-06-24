@@ -1,6 +1,12 @@
 import { Icon } from "@iconify/react";
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useQuery } from "react-query";
+import { useDispatch } from "react-redux";
 import Dropdown from "../../components/Dropdown/Dropdown";
+import Preloader from "../../components/Preloader/Preloader";
+import { budgetActions } from "../../store";
+import { ERROR, Success } from "../../utils/toasts";
 import "./Settings.scss";
 
 export default function Settings() {
@@ -18,6 +24,32 @@ export default function Settings() {
     "November",
     "December",
   ];
+  const dispatch = useDispatch();
+  const [showStart, setShowStart] = useState(false);
+  async function sendMonth() {
+    try {
+      const res = await axios.put(`http://localhost:5000/users/${month}`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("user")).accessToken
+          }`,
+        },
+      });
+      Success("Completed");
+      return res;
+    } catch (err) {
+      ERROR(err.response.data);
+    }
+  }
+
+  const { isFetching, refetch } = useQuery("send-month", sendMonth, {
+    enabled: false,
+    refetchOnWindowFocus: false,
+  });
+  const [month, setMonth] = useState("");
+  if (isFetching) {
+    return <Preloader />;
+  }
   return (
     <div className="setting">
       {showStart && (
@@ -33,14 +65,24 @@ export default function Settings() {
               tittle={"Start From"}
               companyData={months}
               getIndex={(e) => {
-          // setMonthNo();
-          let arr = monthArr;
-          const x = arr.slice(e);
-          setMonthNo(x.concat(arr.slice(0, e)));
+                setMonth(e);
+              }}
+              defaultValue={"Starts from"}
+            />
+            {month.length !== 0 && <button onClick={refetch}>Submit</button>}
+          </div>
+        </div>
+      )}
+      <Icon
+        onClick={() => {
+          setShowStart(true);
         }}
-        defaultValue={"Starts from"}
-      /> */}
-      <Icon icon="ant-design:setting-filled" />
+        icon="ant-design:setting-filled"
+      />
     </div>
   );
 }
+// setMonthNo();
+// let arr = monthArr;
+// const x = arr.slice(e);
+// setMonthNo(x.concat(arr.slice(0, e)));
