@@ -20,10 +20,19 @@ export default function Settings() {
   ];
   return (
     <div className="setting">
-      {/* <Dropdown
-        tittle={"Start From"}
-        companyData={months}
-        getIndex={(e) => {
+      {showStart && (
+        <div>
+          <div>
+            <Icon
+              icon="fa:close"
+              onClick={() => {
+                setShowStart(false);
+              }}
+            />
+            <Dropdown
+              tittle={"Start From"}
+              companyData={months}
+              getIndex={(e) => {
           // setMonthNo();
           let arr = monthArr;
           const x = arr.slice(e);
