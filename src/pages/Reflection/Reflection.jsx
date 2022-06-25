@@ -21,12 +21,11 @@ import Dropdown from "../../components/Dropdown/Dropdown";
 import Preloader from "../../components/Preloader/Preloader";
 import Income from "./Income";
 import { useSelector } from "react-redux";
-import { useContext } from "react";
-import { Data } from "../../App";
 import SubSectionIncome from "./SubSectionIncome";
 import { ERROR } from "../../utils/toasts";
 import Settings from "../Settings/Settings";
 import SubSectionOutcome from "./SubSectionOutcome";
+
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -45,15 +44,16 @@ export default function Reflection() {
   const [show, setShow] = useState("");
   const [dates, setDates] = useState({ begin: "", end: "" });
   const [linesData, setLinesData] = useState([]);
-  const { outcome } = useSelector((state) => {
-    return { outcome: state.outcome };
-  });
-  const { selectedSec, subId } = useSelector((state) => {
+
+  const { selectedSec, subId, outcome, income } = useSelector((state) => {
     return {
       selectedSec: state.lineData.name,
       subId: state.lineData.subId,
+      outcome: state.outcome,
+      income: state.income,
     };
   });
+
   async function getReflection() {
     try {
       const res = await axios.get(
@@ -74,6 +74,7 @@ export default function Reflection() {
       ERROR(err.response.data);
     }
   }
+
   const {
     data: reflection,
     status,
@@ -82,6 +83,7 @@ export default function Reflection() {
     refetchOnWindowFocus: false,
     enabled: true,
   });
+
   const {
     data: subSectionData,
     isFetching: subSectionFetching,
@@ -93,45 +95,48 @@ export default function Reflection() {
 
   async function getSubsection() {
     try {
-      return await axios.get(
+      const res = await axios.get(
         `http://localhost:5000/tracks/sec?secName=${selectedSec}`
       );
+      console.log(res);
     } catch (err) {
       ERROR(err.response.data);
     }
   }
+
   useEffect(() => {
     if (selectedSec) {
       subSectionFetch();
     }
   }, [selectedSec]);
+  console.log(income);
 
-  const data = {
-    labels: outcome.name,
-    datasets: [
-      {
-        label: "# of Votes",
-        data: outcome.chart,
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  // const data = {
+  //   labels: outcome.name,
+  //   datasets: [
+  //     {
+  //       label: "# of Votes",
+  //       data: outcome.chart,
+  //       backgroundColor: [
+  //         "rgba(255, 99, 132, 0.2)",
+  //         "rgba(54, 162, 235, 0.2)",
+  //         "rgba(255, 206, 86, 0.2)",
+  //         "rgba(75, 192, 192, 0.2)",
+  //         "rgba(153, 102, 255, 0.2)",
+  //         "rgba(255, 159, 64, 0.2)",
+  //       ],
+  //       borderColor: [
+  //         "rgba(255, 99, 132, 1)",
+  //         "rgba(54, 162, 235, 1)",
+  //         "rgba(255, 206, 86, 1)",
+  //         "rgba(75, 192, 192, 1)",
+  //         "rgba(153, 102, 255, 1)",
+  //         "rgba(255, 159, 64, 1)",
+  //       ],
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
 
   const options = {
     responsive: true,
@@ -154,6 +159,7 @@ export default function Reflection() {
     );
     setLinesData(res.data);
   }
+
   const { isFetching: gettingLineData, refetch: getLineData } = useQuery(
     "fetch-line",
     fetchLineData,
@@ -162,6 +168,7 @@ export default function Reflection() {
       refetchOnWindowFocus: false,
     }
   );
+
   useEffect(() => {
     if (status === "success") {
       const total = reflection.data.income.map((value) => {
@@ -184,6 +191,7 @@ export default function Reflection() {
     "November",
     "December",
   ];
+
   const lineData = {
     labels: months,
     datasets: [
@@ -201,6 +209,7 @@ export default function Reflection() {
       },
     ],
   };
+
   const date = new Date();
   const [monthIndex, setMonthIndex] = useState(date.getMonth());
   if (isFetching || gettingLineData || subSectionFetching) {
@@ -225,11 +234,11 @@ export default function Reflection() {
 
           <div>
             <h2>Income</h2>
-            <Pie data={data} />
+            {/* <Pie data={data} /> */}
           </div>
           <div>
             <h2>Outcome</h2>
-            <Pie data={data} />
+            {/* <Pie data={data} /> */}
           </div>
         </div>
 
@@ -287,20 +296,24 @@ export default function Reflection() {
                 )}
                 {show === "sub-section" && (
                   <>
-                    {subSectionData.data.income[0] && (
+                    {subSectionData?.data?.income[0] && (
                       <SubSectionIncome
                         monthIndex={monthIndex}
                         data={subSectionData.data}
                         setShow={setShow}
                       />
                     )}
-                    {subSectionData.data.outcome[0] && (
+                    {subSectionData?.data?.outcome[0] && (
                       <SubSectionOutcome
                         monthIndex={monthIndex}
                         data={subSectionData.data}
                         setShow={setShow}
                       />
                     )}
+                    {!subSectionData?.data?.outcome[0] &&
+                      !subSectionData?.data?.income[0] && (
+                        <p>No data available</p>
+                      )}
                   </>
                 )}
                 {show === "line-chart" && (

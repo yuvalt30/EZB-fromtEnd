@@ -21,7 +21,6 @@ export default function SubSectionOutcome({ setShow, data, monthIndex }) {
   useEffect(() => {
     dispatch(budgetActions.outcomeChart(charts));
   }, [charts]);
-
   useEffect(() => {
     let percentageSum = 0;
     data.outcome.forEach((value) => {

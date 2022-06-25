@@ -1,5 +1,4 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-import { hasSelectionSupport } from "@testing-library/user-event/dist/utils";
 
 const budget = createSlice({
   name: "chat-data",
@@ -23,14 +22,15 @@ const budget = createSlice({
   },
   reducers: {
     outcomeChart(state, { payload }) {
-      state.outcome.chart = payload;
+      state.outcome.chart = payload.chart;
+      state.outcome.name = payload.name;
     },
     incomeChart(state, { payload }) {
-      state.income.chart = payload;
+      state.income.chart = payload.chart;
+      state.income.name = payload.name;
+      console.log(payload);
     },
-    sectionName(state, { payload }) {
-      state.outcome.name = payload;
-    },
+
     sectionArr(state, { payload }) {
       state.sectionArr = payload.sectionsArr;
       state.data = payload.sectionData;
