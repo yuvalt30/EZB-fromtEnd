@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useDispatch } from "react-redux";
 import { budgetActions } from "../../store";
@@ -10,11 +10,8 @@ export default function Income({ setShow, data, monthIndex }) {
   const [monthSum, setMonthSum] = useState([]);
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
-  const [charts, setCharts] = useState([]);
   const [monthArr, setMonthArr] = useState([]);
-  const [months, setMonths] = useState(monthNo);
   const dispatch = useDispatch();
-  const tableRef = useRef(null);
 
   useEffect(() => {
     let percentageSum = 0;
@@ -60,24 +57,11 @@ export default function Income({ setShow, data, monthIndex }) {
   const id = useId();
   return (
     <>
-      {/* <Settings /> */}
       <div className="table">
         <h2>income</h2>
-        {/* <DownloadTableExcel
-          filename="users table"
-          sheet="users"
-          currentTableRef={tableRef.current}
-        >
-          <button> Export excel </button>
-        </DownloadTableExcel> */}
+
         <div className="fixTableHead">
-          <table
-            ref={tableRef}
-            align="center"
-            border={1}
-            cellSpacing={0}
-            cellPadding={5}
-          >
+          <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>
               <tr>
                 <td>income</td>
@@ -157,14 +141,7 @@ export default function Income({ setShow, data, monthIndex }) {
   );
 }
 
-export function Row({
-  setShow,
-  value,
-  total,
-  monthIndex,
-  performance,
-  chartData,
-}) {
+export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
@@ -216,7 +193,7 @@ export function Row({
             <td
               key={month + Math.random()}
               className={`monthly_budget ${
-                month > value.incomeBudget ? "alert" : ""
+                month < value.incomeBudget ? "alert" : ""
               }`}
             >
               {month}

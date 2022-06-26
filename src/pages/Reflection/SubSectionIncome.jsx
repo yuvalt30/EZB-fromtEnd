@@ -2,7 +2,6 @@ import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
-import Settings from "../Settings/Settings";
 import { monthNo } from "./Reflection";
 
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
@@ -13,7 +12,6 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
   const [charts, setCharts] = useState([]);
-  const [sectionName, setSectionName] = useState([]);
   const dispatch = useDispatch();
   const { selectedSec } = useSelector((state) => {
     return {
@@ -44,10 +42,6 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
     data.income.forEach((value, i) => {
       monthBudget.push(value.income);
       monthSumTotal += value.incomeBudget;
-      setSectionName((p) => {
-        // dispatch(budgetActions.sectionName([...p, value.section]));
-        return [...p, value.section];
-      });
     });
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
@@ -56,7 +50,6 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
   const id = useId();
   return (
     <>
-      {/* <Settings /> */}
       <div className="table">
         <h2>{selectedSec}</h2>
         <div className="fixTableHead">

@@ -22,12 +22,12 @@ const budget = createSlice({
   },
   reducers: {
     outcomeChart(state, { payload }) {
-      state.outcome.chart = payload.chart;
-      state.outcome.name = payload.name;
+      payload.chart && (state.outcome.chart = payload.chart);
+      payload.name && (state.outcome.name = payload.name);
     },
     incomeChart(state, { payload }) {
-      state.income.chart = payload.chart;
-      state.income.name = payload.name;
+      payload.chart && (state.income.chart = payload.chart);
+      payload.name && (state.income.name = payload.name);
       console.log(payload);
     },
 

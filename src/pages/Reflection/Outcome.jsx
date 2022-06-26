@@ -2,49 +2,54 @@ import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useDispatch } from "react-redux";
 import { budgetActions } from "../../store";
-import Settings from "../Settings/Settings";
 import { monthNo } from "./Reflection";
-
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
-export default function SectionTable({ setShow, data, monthIndex }) {
+export default function Outcome({ setShow, data, monthIndex }) {
   const [monthAVG, setMonthAVG] = useState(0);
   const [monthSum, setMonthSum] = useState([]);
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
-  const [charts, setCharts] = useState([]);
-  const [sectionName, setSectionName] = useState([]);
-
+  const [monthArr, setMonthArr] = useState([]);
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(budgetActions.outcomeChart(charts));
-  }, [charts]);
 
   useEffect(() => {
     let percentageSum = 0;
+    const percentArr = [];
     data.outcome.forEach((value) => {
       for (let i = 0; i <= monthIndex; i++) {
         percentageSum += value.outcome[i];
       }
+      percentArr.push(
+        monthTotal !== 0 && value.outcomeBudget
+          ? (value.outcomeBudget / monthTotal) * 100
+          : 0
+      );
     });
+    dispatch(budgetActions.outcomeChart({ chart: percentArr }));
     const monthAVGSum = percentageSum / (monthIndex + 1);
     setMonthAVG(() =>
       String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
     );
     setPerformanceTotal(percentageSum);
+    setMonthArr(
+      monthNo
+        .slice(JSON.parse(localStorage.getItem("user")).startMonth)
+        .concat(monthNo.slice(0, monthIndex))
+    );
   }, [monthIndex]);
 
   useEffect(() => {
     const monthBudget = [];
     let monthSumTotal = 0;
+    const sectionName = [];
     data.outcome.forEach((value, i) => {
       monthBudget.push(value.outcome);
       monthSumTotal += value.outcomeBudget;
-      setSectionName((p) => {
-        // dispatch(budgetActions.sectionName([...p, value.section]));
-        return [...p, value.section];
-      });
+      sectionName.push(value.section);
     });
+
+    dispatch(budgetActions.outcomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
   }, []);
@@ -52,9 +57,9 @@ export default function SectionTable({ setShow, data, monthIndex }) {
   const id = useId();
   return (
     <>
-      {/* <Settings /> */}
       <div className="table">
         <h2>outcome</h2>
+
         <div className="fixTableHead">
           <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>
@@ -79,7 +84,7 @@ export default function SectionTable({ setShow, data, monthIndex }) {
                 <td className="execution">Percentage</td>
                 <td className="execution">Performance</td>
                 <td className="execution">Month avg</td>
-                {monthNo.map((value, i) => {
+                {monthArr.map((value, i) => {
                   return (
                     i <= monthIndex && (
                       <td key={value} className="monthly_budget">
@@ -107,7 +112,6 @@ export default function SectionTable({ setShow, data, monthIndex }) {
                     i={i}
                     key={"a" + i * 2}
                     monthIndex={monthIndex}
-                    chartData={setCharts}
                   />
                 );
               })}
@@ -137,33 +141,23 @@ export default function SectionTable({ setShow, data, monthIndex }) {
   );
 }
 
-export function Row({
-  setShow,
-  value,
-  total,
-  monthIndex,
-  performance,
-  chartData,
-}) {
+export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
-    chartData((p) => [
-      ...p,
-      performance !== 0 && value.outcomeBudget
-        ? ((value.outcomeBudget / performance) * 100).toFixed(2)
-        : 0,
-    ]);
     value.outcomeBudget !== 0 &&
       setPercentage((performance / (value.outcomeBudget * 12)) * 100);
   }, [monthIndex]);
+
   return (
     <tr>
       <td
         onClick={() => {
           setShow("menu");
+          dispatch(budgetActions.lineData({ name: value.section }));
         }}
       >
         {value.section}
@@ -177,7 +171,7 @@ export function Row({
         )}
       </td>
       <td className="plan_budget_data">
-        {total.totalMonth !== 0 && value.outcomeBudget ? (
+        {total.monthTotal !== 0 && value.outcomeBudget ? (
           ((value.outcomeBudget / total.monthTotal) * 100).toFixed(2) + "%"
         ) : (
           <Icon icon="ep:close-bold" />

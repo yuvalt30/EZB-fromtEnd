@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
 
@@ -12,15 +12,16 @@ export default function SubSectionOutcome({ setShow, data, monthIndex }) {
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
   const [charts, setCharts] = useState([]);
-  const [sectionName, setSectionName] = useState([]);
-  const [startMonth, setStartMonth] = useState(
-    JSON.parse(localStorage.getItem("user")).startMonth
-  );
-  const [months, setMonths] = useState(monthNo);
   const dispatch = useDispatch();
+  const { selectedSec } = useSelector((state) => {
+    return {
+      selectedSec: state.lineData.name,
+    };
+  });
   useEffect(() => {
     dispatch(budgetActions.outcomeChart(charts));
   }, [charts]);
+
   useEffect(() => {
     let percentageSum = 0;
     data.outcome.forEach((value) => {
@@ -41,27 +42,16 @@ export default function SubSectionOutcome({ setShow, data, monthIndex }) {
     data.outcome.forEach((value, i) => {
       monthBudget.push(value.outcome);
       monthSumTotal += value.outcomeBudget;
-      setSectionName((p) => {
-        // dispatch(budgetActions.sectionName([...p, value.section]));
-        return [...p, value.section];
-      });
     });
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
-    const newMonthNo = [
-      monthNo.slice(startMonth),
-      monthNo.slice(0, monthIndex),
-    ];
-
-    console.log(newMonthNo);
   }, []);
 
   const id = useId();
   return (
     <>
-      {/* <Settings /> */}
       <div className="table">
-        <h2>outcome</h2>
+        <h2>{selectedSec}</h2>
         <div className="fixTableHead">
           <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>
@@ -171,8 +161,10 @@ export function Row({
     <tr>
       <td
         onClick={() => {
-          setShow("menu");
-          dispatch(budgetActions.lineData({ name: value.section }));
+          setShow("show-date");
+          dispatch(
+            budgetActions.lineData({ name: value.section, subId: value._id })
+          );
         }}
       >
         {value.section}
