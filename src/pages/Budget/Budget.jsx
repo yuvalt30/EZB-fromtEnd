@@ -62,7 +62,7 @@ export default function Budget() {
       ERROR(err.response.data);
     }
   }
-  const { isFetching: csvSending, refetch: sendCsvFile } = useQuery(
+  const { isLoading: csvSending, refetch: sendCsvFile } = useQuery(
     "send-csv",
     sendCsv,
     {
@@ -94,11 +94,11 @@ export default function Budget() {
       Warn("Fill all the data");
     }
   }
-  const { refetch, isFetching } = useQuery("register", sendData, {
+  const { refetch, isLoading } = useQuery("register", sendData, {
     enabled: false,
     refetchOnWindowFocus: false,
   });
-  if (isFetching) {
+  if (isLoading) {
     return <Preloader />;
   }
   if (csvSending) {

@@ -56,13 +56,13 @@ export default function Register() {
       ERROR(err.response.data);
     }
   }
-  const { data, isFetching } = useQuery("get-sections-name", getSections, {
+  const { data, isLoading } = useQuery("get-sections-name", getSections, {
     refetchOnWindowFocus: false,
   });
   const {
     refetch,
     status,
-    isFetching: registerFetching,
+    isLoading: registerFetching,
   } = useQuery("register", sendData, {
     enabled: false,
     refetchOnWindowFocus: false,
@@ -92,7 +92,7 @@ export default function Register() {
   if (registerFetching) {
     return <Preloader />;
   }
-  if (isFetching) {
+  if (isLoading) {
     return <Preloader />;
   }
   return (

@@ -14,6 +14,7 @@ import PlanBudget from "./pages/PlanBudget/PlanBudget";
 import { useSelector } from "react-redux";
 import Settings from "./pages/Settings/Settings";
 import axios from "axios";
+import AllTransactions from "./pages/AllTransactions/AllTransactions";
 export const Data = createContext();
 
 function App() {
@@ -88,6 +89,7 @@ function App() {
                 <Route path="/reflection" element={<Reflection />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/plan-budget" element={<PlanBudget />} />
+                <Route path="/all-transactions" element={<AllTransactions />} />
               </>
             )}
           </Routes>

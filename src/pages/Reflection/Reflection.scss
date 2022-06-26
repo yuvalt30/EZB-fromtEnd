@@ -17,7 +17,7 @@
     display: flex;
     justify-content: space-between;
     padding: 3rem 1rem;
-        margin: auto;
+    margin: auto;
     & > div:first-child {
       margin-right: 4rem;
       width: 20rem;
@@ -76,7 +76,7 @@
       column-gap: 20px;
       color: #000;
     }
-    & >svg {
+    & > svg {
       position: absolute;
       top: -5px;
       cursor: pointer;
@@ -102,7 +102,7 @@
     overflow: hidden;
     background: #fff;
   }
-  overflow-y:scroll;
+  overflow-y: scroll;
 }
 
 .section_table,
@@ -158,5 +158,22 @@
   }
   td:first-child {
     background: #65c5f136;
+  }
+}
+
+.all-transactions {
+  width: 100%;
+  padding: 1rem;
+  table {
+    td:first-child {
+      text-decoration: none;
+    }
+    width: 100%;
+  }
+  .section_table {
+    width: 100%;
+  }
+  .fixTableHead {
+    max-height: 500px;
   }
 }

@@ -19,6 +19,7 @@ const budget = createSlice({
       name: "",
       subId: "",
     },
+    summary: [],
   },
   reducers: {
     outcomeChart(state, { payload }) {

@@ -42,12 +42,12 @@ export default function Settings() {
     }
   }
 
-  const { isFetching, refetch } = useQuery("send-month", sendMonth, {
+  const { isLoading, refetch } = useQuery("send-month", sendMonth, {
     enabled: false,
     refetchOnWindowFocus: false,
   });
   const [month, setMonth] = useState("");
-  if (isFetching) {
+  if (isLoading) {
     return <Preloader />;
   }
   return (

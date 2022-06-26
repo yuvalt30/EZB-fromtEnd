@@ -98,7 +98,7 @@ export default function PlanBudget() {
       ERROR(err.response.data);
     }
   }
-  const { isFetching: fetchingBudgetCsv, refetch: sendCsvFetch } = useQuery(
+  const { isLoading: fetchingBudgetCsv, refetch: sendCsvFetch } = useQuery(
     "send-budget",
     sendBudget,
     {
@@ -106,11 +106,11 @@ export default function PlanBudget() {
       enabled: false,
     }
   );
-  const { isFetching, refetch } = useQuery("send-plan-budget-csv", sendCSV, {
+  const { isLoading, refetch } = useQuery("send-plan-budget-csv", sendCSV, {
     refetchOnWindowFocus: false,
     enabled: false,
   });
-  if (isFetching || fetchingBudgetCsv) {
+  if (isLoading || fetchingBudgetCsv) {
     return <Preloader />;
   }
   return (

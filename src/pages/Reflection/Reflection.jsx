@@ -53,6 +53,7 @@ export default function Reflection() {
       income: state.income,
     };
   });
+
   async function getReflection() {
     try {
       const res = await axios.get(
@@ -77,7 +78,7 @@ export default function Reflection() {
   const {
     data: reflection,
     status,
-    isFetching,
+    isLoading,
   } = useQuery("reflection", getReflection, {
     refetchOnWindowFocus: false,
     enabled: true,
@@ -85,7 +86,7 @@ export default function Reflection() {
 
   const {
     data: subSectionData,
-    isFetching: subSectionFetching,
+    isLoading: subSectionFetching,
     refetch: subSectionFetch,
   } = useQuery("sub-section-data", getSubsection, {
     refetchOnWindowFocus: false,
@@ -109,12 +110,39 @@ export default function Reflection() {
     }
   }, [selectedSec]);
 
-  const data = {
+  const dataIncome = {
     labels: ["arif", "arid"],
     datasets: [
       {
         label: "# of Votes",
         data: income.chart,
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const dataOutcome = {
+    labels: ["arif", "arid"],
+    datasets: [
+      {
+        label: "# of Votes",
+        data: outcome.chart,
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -171,7 +199,7 @@ export default function Reflection() {
     }
   }
 
-  const { isFetching: gettingLineData, refetch: getLineData } = useQuery(
+  const { isLoading: gettingLineData, refetch: getLineData } = useQuery(
     "fetch-line",
     fetchLineData,
     {
@@ -212,6 +240,7 @@ export default function Reflection() {
       },
     ],
   };
+
   const subLineData = {
     labels: months,
     datasets: [
@@ -226,7 +255,7 @@ export default function Reflection() {
 
   const date = new Date();
   const [monthIndex, setMonthIndex] = useState(date.getMonth());
-  if (isFetching || gettingLineData || subSectionFetching) {
+  if (isLoading || gettingLineData || subSectionFetching) {
     return <Preloader />;
   }
 
@@ -248,11 +277,11 @@ export default function Reflection() {
 
           <div>
             <h2>Income</h2>
-            <Pie data={data} />
+            <Pie data={dataIncome} />
           </div>
           <div>
             <h2>Outcome</h2>
-            <Pie data={data} />
+            <Pie data={dataOutcome} />
           </div>
         </div>
 

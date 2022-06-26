@@ -52,9 +52,9 @@ export default function Sidebar({ user }) {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/user-preference">
+              <NavLink to="/all-transactions">
                 <Icon icon="el:graph-alt" />
-                <span className="title">User preference</span>
+                <span className="title">All transactions</span>
               </NavLink>
             </li>
           </>

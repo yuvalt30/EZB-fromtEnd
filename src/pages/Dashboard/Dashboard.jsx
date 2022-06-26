@@ -44,7 +44,7 @@ export default function Dashboard() {
     }
   }
 
-  const { isFetching, isFetched, refetch } = useQuery(
+  const { isLoading, isFetched, refetch } = useQuery(
     "send-section",
     sendSections,
     {
@@ -52,7 +52,7 @@ export default function Dashboard() {
       enabled: false,
     }
   );
-  const { isFetching: csvSending, refetch: sendCsvFile } = useQuery(
+  const { isLoading: csvSending, refetch: sendCsvFile } = useQuery(
     "send-csv",
     sendCsv,
     {
@@ -123,7 +123,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  if (isFetching) {
+  if (isLoading) {
     return <Preloader />;
   }
   if (csvSending) {
