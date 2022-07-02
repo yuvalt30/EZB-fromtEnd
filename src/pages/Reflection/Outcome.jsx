@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import { useDispatch } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
-const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
+export const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
 export default function Outcome({ setShow, data, monthIndex }) {
   const [monthAVG, setMonthAVG] = useState(0);
@@ -16,17 +16,30 @@ export default function Outcome({ setShow, data, monthIndex }) {
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
+    const performanceSumArr = [];
+
     data.outcome.forEach((value) => {
+      let performanceSum = 0;
       for (let i = 0; i <= monthIndex; i++) {
-        percentageSum += value.outcome[i];
+        performanceSum += value.outcome[i];
       }
+      console.log(performanceSum);
+
+      performanceSumArr.push({
+        name: value.section,
+        value: performanceSum,
+      });
       percentArr.push(
         monthTotal !== 0 && value.outcomeBudget
           ? (value.outcomeBudget / monthTotal) * 100
           : 0
       );
     });
+
     dispatch(budgetActions.outcomeChart({ chart: percentArr }));
+    dispatch(budgetActions.plannedOutcome(performanceSumArr));
+    dispatch(budgetActions.performanceTotal(percentageSum));
+
     const monthAVGSum = percentageSum / (monthIndex + 1);
     setMonthAVG(() =>
       String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
@@ -43,12 +56,16 @@ export default function Outcome({ setShow, data, monthIndex }) {
     const monthBudget = [];
     let monthSumTotal = 0;
     const sectionName = [];
+    const percentArr = [];
     data.outcome.forEach((value, i) => {
       monthBudget.push(value.outcome);
       monthSumTotal += value.outcomeBudget;
       sectionName.push(value.section);
     });
-
+    data.outcome.forEach((value, i) => {
+      percentArr.push(((value.outcomeBudget / monthTotal) * 100).toFixed(2));
+    });
+    console.log(monthSumTotal);
     dispatch(budgetActions.outcomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
@@ -193,7 +210,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
             <td
               key={month + Math.random()}
               className={`monthly_budget ${
-                month > value.outcomeBudget ? "alert" : ""
+                month < value.outcomeBudget ? "alert" : ""
               }`}
             >
               {month}

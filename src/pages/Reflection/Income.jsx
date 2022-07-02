@@ -16,17 +16,30 @@ export default function Income({ setShow, data, monthIndex }) {
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
+    const performanceSumArr = [];
+
     data.income.forEach((value) => {
+      let performanceSum = 0;
       for (let i = 0; i <= monthIndex; i++) {
-        percentageSum += value.income[i];
+        performanceSum += value.income[i];
       }
+      console.log(performanceSum);
+
+      performanceSumArr.push({
+        name: value.section,
+        value: performanceSum,
+      });
       percentArr.push(
         monthTotal !== 0 && value.incomeBudget
           ? (value.incomeBudget / monthTotal) * 100
           : 0
       );
     });
+
     dispatch(budgetActions.incomeChart({ chart: percentArr }));
+    dispatch(budgetActions.plannedIncome(performanceSumArr));
+    dispatch(budgetActions.performanceTotal(percentageSum));
+
     const monthAVGSum = percentageSum / (monthIndex + 1);
     setMonthAVG(() =>
       String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
@@ -43,12 +56,16 @@ export default function Income({ setShow, data, monthIndex }) {
     const monthBudget = [];
     let monthSumTotal = 0;
     const sectionName = [];
+    const percentArr = [];
     data.income.forEach((value, i) => {
       monthBudget.push(value.income);
       monthSumTotal += value.incomeBudget;
       sectionName.push(value.section);
     });
-
+    data.income.forEach((value, i) => {
+      percentArr.push(((value.incomeBudget / monthTotal) * 100).toFixed(2));
+    });
+    console.log(monthSumTotal);
     dispatch(budgetActions.incomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));

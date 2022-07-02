@@ -25,6 +25,7 @@ import { ERROR } from "../../utils/toasts";
 import Settings from "../Settings/Settings";
 import SubSectionOutcome from "./SubSectionOutcome";
 import Outcome from "./Outcome";
+import Summery from "./Summery";
 
 ChartJS.register(
   ArcElement,
@@ -109,7 +110,6 @@ export default function Reflection() {
       subSectionFetch();
     }
   }, [selectedSec]);
-
   const dataIncome = {
     labels: ["arif", "arid"],
     datasets: [
@@ -184,6 +184,7 @@ export default function Reflection() {
           .reverse()
           .join("/")}&sectionName=${selectedSec}`
       );
+
       setLinesData(res.data);
     } else {
       const res = await axios.get(
@@ -296,6 +297,7 @@ export default function Reflection() {
             data={reflection.data}
             setShow={setShow}
           />
+          <Summery data={reflection.data.summary} monthIndex={monthIndex} />
         </div>
 
         {show && (

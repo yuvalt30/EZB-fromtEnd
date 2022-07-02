@@ -137,6 +137,7 @@
     .plan_budget_data {
       background-color: #9bf8e1;
     }
+
     .execution {
       background: #ffc5b3;
     }
@@ -170,10 +171,16 @@
     }
     width: 100%;
   }
+  tbody .subsection_data {
+    background-color: #ff67671f !important;
+  }
   .section_table {
     width: 100%;
   }
   .fixTableHead {
     max-height: 500px;
+  }
+  .subsection_data {
+    background-color: #ff6767 !important;
   }
 }
