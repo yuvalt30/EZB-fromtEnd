@@ -21,7 +21,7 @@ export default function Sidebar({ user }) {
         <li>
           <NavLink to="/">
             <Icon icon="fluent:cube-rotate-20-filled" />
-            <span className="title">Transactions</span>
+            <span className="title">Insert transactions</span>
           </NavLink>
         </li>
 
@@ -36,13 +36,13 @@ export default function Sidebar({ user }) {
             <li>
               <NavLink to="/budget">
                 <Icon icon="mdi:account-cash-outline" />
-                <span className="title">Budget</span>
+                <span className="title">Plan a Budget</span>
               </NavLink>
             </li>
             <li>
               <NavLink to="/plan-budget">
                 <Icon icon="carbon:heat-map-02" />
-                <span className="title">Plan Budget</span>
+                <span className="title">Create section</span>
               </NavLink>
             </li>
             <li>
