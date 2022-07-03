@@ -12,7 +12,7 @@ export default function AllTransactions() {
   const [subSectionName, setSubSectionName] = useState([]);
   const [tableData, setTableData] = useState([]);
   const { data, isLoading, isFetched } = useQuery(
-    "sub-section-data",
+    "all-transaction-data",
     async () => {
       const res = await axios.get(`http://localhost:5000/transactions/`, {
         headers: {
