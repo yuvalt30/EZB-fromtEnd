@@ -22,9 +22,9 @@ export default function Summery({ data, monthIndex }) {
               <td>section</td>
               <td className="plan_budget_data">planned income</td>
               <td className="execution">planned outcome</td>
-              <td>planned balance</td>
-              <td>current balance</td>
-              <td>% of planned</td>
+              <td className="plan_blnc">planned balance</td>
+              <td className="crnt_blnc">current balance</td>
+              <td className="prcnt_blnc">% of planned</td>
               <td>% gap of current month</td>
             </tr>
           </thead>
@@ -48,12 +48,18 @@ export default function Summery({ data, monthIndex }) {
               return (
                 <tr key={Math.random() * 100 + "az"}>
                   <td>{value.section}</td>
-                  <td>{value.incomeBudget || 0}</td>
-                  <td>{value.outcomeBudget || 0}</td>
-                  <td>{planBudget}</td>
-                  <td>{current}</td>
-                  <td>{planBudget !== 0 ? percent : 0}%</td>
-                  <td>{monthPercentage[monthIndex] - percent}%</td>
+                  <td className="plan_budget_data">
+                    {value.incomeBudget || 0}
+                  </td>
+                  <td className="execution">{value.outcomeBudget || 0}</td>
+                  <td className="plan_blnc">{planBudget}</td>
+                  <td className="crnt_blnc">{current}</td>
+                  <td className="prcnt_blnc">
+                    {planBudget !== 0 ? percent : 0}%
+                  </td>
+                  <td className="monthly_budget">
+                    {(monthPercentage[monthIndex] - percent).toFixed(2)}%
+                  </td>
                 </tr>
               );
             })}

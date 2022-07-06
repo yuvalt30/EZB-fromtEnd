@@ -54,6 +54,62 @@ export default function Reflection() {
       income: state.income,
     };
   });
+  console.log(outcome, income);
+  const [dataIncome, setDataIncome] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "# of Votes",
+        data: income.chart,
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  });
+  useEffect(() => {
+    setDataIncome({
+      labels: [],
+      datasets: [
+        {
+          label: "# of Votes",
+          data: income.chart,
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 159, 64, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
+    // const tempInc = datasets[0].data
+  }, [income.chart]);
 
   async function getReflection() {
     try {
@@ -69,7 +125,6 @@ export default function Reflection() {
           },
         }
       );
-      console.log(res);
       return res;
     } catch (err) {
       ERROR(err.response.data);
@@ -110,35 +165,9 @@ export default function Reflection() {
       subSectionFetch();
     }
   }, [selectedSec]);
-  const dataIncome = {
-    labels: ["arif", "arid"],
-    datasets: [
-      {
-        label: "# of Votes",
-        data: income.chart,
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
 
   const dataOutcome = {
-    labels: ["arif", "arid"],
+    labels: [],
     datasets: [
       {
         label: "# of Votes",
@@ -256,6 +285,10 @@ export default function Reflection() {
 
   const date = new Date();
   const [monthIndex, setMonthIndex] = useState(date.getMonth());
+  useEffect(() => {
+    setMonthIndex(date.getMonth());
+  }, []);
+
   if (isLoading || gettingLineData || subSectionFetching) {
     return <Preloader />;
   }

@@ -23,7 +23,6 @@ export default function Income({ setShow, data, monthIndex }) {
       for (let i = 0; i <= monthIndex; i++) {
         performanceSum += value.income[i];
       }
-      console.log(performanceSum);
 
       performanceSumArr.push({
         name: value.section,
@@ -50,7 +49,7 @@ export default function Income({ setShow, data, monthIndex }) {
         .slice(JSON.parse(localStorage.getItem("user")).startMonth)
         .concat(monthNo.slice(0, monthIndex))
     );
-  }, [monthIndex]);
+  }, [monthIndex, monthTotal]);
 
   useEffect(() => {
     const monthBudget = [];

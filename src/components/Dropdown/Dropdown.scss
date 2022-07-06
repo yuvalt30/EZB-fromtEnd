@@ -56,6 +56,10 @@
   width: 100%;
   text-align: left;
   transition: 150ms;
+  display: flex;
+    align-items: center;
+    justify-content: space-between;
+
   &:hover {
     background-color: #47bdf3;
     color: #fff;

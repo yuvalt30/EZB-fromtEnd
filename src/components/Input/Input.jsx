@@ -8,6 +8,7 @@ export default function Input({ children, type, error, ...rest }) {
         className={error ? "error" : null}
         {...rest}
         type={type || "text"}
+        placeholder={type === "date" ? "dd-mm-yyyy" : ""}
       />
     </div>
   );

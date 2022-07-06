@@ -121,11 +121,21 @@
   thead {
     tr:first-child {
       font-weight: 600;
+      background: #8aa9e1;
       td {
         background: #8aa9e1;
         &:first-child {
           background: #87d5f9;
         }
+      }
+      .plan_blnc {
+        background: rgb(22, 191, 221);
+      }
+      .crnt_blnc {
+        background: rgb(147, 162, 248);
+      }
+      .prcnt_blnc {
+        background: rgb(216, 147, 248);
       }
       .plan_budget_data {
         background-color: #67eccb;
@@ -141,15 +151,26 @@
     .execution {
       background: #ffc5b3;
     }
+
     .monthly_budget {
       background: #a8c2f2;
     }
+
     td:first-child {
       background: #92d6f5;
     }
   }
+  .plan_blnc {
+    background: #16bfdd48;
+  }
+  .crnt_blnc {
+    background: #93a2f84d;
+  }
+  .prcnt_blnc {
+    background: #d893f82d;
+  }
   .plan_budget_data {
-    background-color: #47f3c836;
+    background-color: #4af2c836;
   }
   .execution {
     background: #ff7d5533;

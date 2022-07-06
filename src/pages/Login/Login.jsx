@@ -26,7 +26,6 @@ export default function Login() {
         "http://localhost:5000/users/login",
         signIn
       );
-      console.log(data.data);
       localStorage.setItem("user", JSON.stringify(data.data));
       navigate("/", { replace: true });
       const sectionData = await axios.get(

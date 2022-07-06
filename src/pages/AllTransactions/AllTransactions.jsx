@@ -5,47 +5,86 @@ import Preloader from "../../components/Preloader/Preloader";
 import "../Reflection/Reflection.scss";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import "./ALLTransactions.scss";
-const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
-
+import PermissionDropdown from "../../components/Dropdown/PermissionDropdown";
 export default function AllTransactions() {
   const [sectionName, setSectionName] = useState([]);
+
   const [subSectionName, setSubSectionName] = useState([]);
+
   const [tableData, setTableData] = useState([]);
-  const { data, isLoading, isFetched } = useQuery(
+  const [sortOrder, setSortOrder] = useState("ASC");
+  const { data, isFetching } = useQuery(
     "all-transaction-data",
     async () => {
-      const res = await axios.get(`http://localhost:5000/transactions/`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("user")).accessToken
-          }`,
-        },
-      });
-      return res;
+      try {
+        const res = await axios.get(`http://localhost:5000/transactions/`, {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).accessToken
+            }`,
+          },
+        });
+        return res.data;
+      } catch (err) {
+        console.log(err);
+      }
     },
     {
-      refetchOnWindowFocus: true,
-      enabled: true,
+      refetchOnWindowFocus: false,
+      initialData: [],
     }
   );
   const date = new Date();
   useEffect(() => {
-    if (isFetched) {
-      setTableData(data.data);
-      const sectionNames = data.data.reduce((value, curr) => {
-        !value.includes(curr) && value.push(curr.section.sectionName);
+    if (!isFetching) {
+      setTableData(data);
+      const sectionNames = data.reduce((value, curr) => {
+        !value.includes(curr.section.sectionName) &&
+          value.push(curr.section.sectionName);
         return value;
       }, []);
-      const subSectionNames = data.data.reduce((value, curr) => {
-        !value.includes(curr) && value.push(curr.section.subSection);
+      const subSectionNames = data.reduce((value, curr) => {
+        !value.includes(curr.section.subSection) &&
+          value.push(curr.section.subSection);
         return value;
       }, []);
       setSectionName(sectionNames);
       setSubSectionName(subSectionNames);
     }
-  }, []);
+  }, [data]);
 
-  if (isLoading) {
+  function sortData(type, key) {
+    if (type === "text") {
+      if (sortOrder === "ASC") {
+        const sorted = [...tableData].sort((a, b) =>
+          a.section[key].toLowerCase() > b.section[key].toLowerCase() ? 1 : -1
+        );
+        setTableData(sorted);
+        setSortOrder("DSC");
+      }
+      if (sortOrder === "DSC") {
+        const sorted = [...tableData].sort((a, b) =>
+          a.section[key].toLowerCase() < b.section[key].toLowerCase() ? 1 : -1
+        );
+        setTableData(sorted);
+        setSortOrder("ASC");
+      }
+    }
+
+    if (type === "number") {
+      if (sortOrder === "ASC") {
+        const sorted = [...tableData].sort((a, b) => a[key] - b[key]);
+        setTableData(sorted);
+        setSortOrder("DSC");
+      }
+      if (sortOrder === "DSC") {
+        const sorted = [...tableData].sort((a, b) => b[key] - a[key]);
+        setTableData(sorted);
+        setSortOrder("ASC");
+      }
+    }
+  }
+  if (isFetching) {
     return <Preloader />;
   }
 
@@ -54,32 +93,32 @@ export default function AllTransactions() {
       <div className="transaction-container">
         <div className="filter">
           <h4>Filter by</h4>
-          <Dropdown
-            tittle={"Section"}
+          <PermissionDropdown
+            tittle={"Select a section"}
+            companyData={sectionName}
             onChange={(e) => {
               setTableData(
-                data.data.filter((value) => {
-                  return value.section.sectionName === e;
+                data.filter((value) => {
+                  return e.includes(value.section.sectionName);
                 })
               );
             }}
-            companyData={sectionName}
           />
-          <Dropdown
-            tittle={"Sub section"}
-            defaultValue={"Select a sub section"}
+          <PermissionDropdown
+            tittle={"Select a sub sections"}
             companyData={subSectionName}
             onChange={(e) => {
               setTableData(
-                data.data.filter((value) => {
-                  return value.section.subSection === e;
+                data.filter((value) => {
+                  return e.includes(value.section.subSection);
                 })
               );
             }}
           />
+
           <button
             onClick={() => {
-              setTableData(data.data);
+              setTableData(data);
             }}
           >
             Reset
@@ -99,8 +138,21 @@ export default function AllTransactions() {
                 >
                   <thead>
                     <tr>
-                      <td>Section</td>
-                      <td className="subsection_data">Sub Section</td>
+                      <td
+                        onClick={() => {
+                          sortData("text", "sectionName");
+                        }}
+                      >
+                        Section
+                      </td>
+                      <td
+                        onClick={() => {
+                          sortData("text", "subSection");
+                        }}
+                        className="subsection_data"
+                      >
+                        Sub Section
+                      </td>
                       <td className="plan_budget_data">Amount</td>
                       <td className="execution">Description</td>
                       <td>Date</td>

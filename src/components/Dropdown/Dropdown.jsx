@@ -65,6 +65,10 @@ export const Dropdown = ({
     }
     return () => document.removeEventListener("click", handleClick);
   }, []);
+  useEffect(() => {
+    setDropDownName(defaultValue);
+  }, [defaultValue]);
+
   return (
     <div ref={componentRef} className="dropdown">
       <p style={{ marginBottom: 18 }}>{tittle}</p>

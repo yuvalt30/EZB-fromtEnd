@@ -14,9 +14,7 @@ export default function Budget() {
   const [sections, setSections] = useState();
   const { sectionsArr, data, user } = useContext(Data);
   const [subSections, setSubSections] = useState();
-  const [subSectionsTitle, setSubSectionsTitle] = useState([]);
   const [amount, setAmount] = useState(0);
-  const [errors, setErrors] = useState({});
   const [csvFile, setCsvFile] = useState({});
   const [csvData, setCsvData] = useState([]);
 
@@ -131,9 +129,8 @@ export default function Budget() {
               onChange={(e) => {
                 setAmount(e.target.value);
               }}
-              error={errors.amount}
             >
-              Monthly budget for {subSectionsTitle} of {sections}
+              Monthly budget for {sections} of {subSections}
             </Input>
           )}
           <button

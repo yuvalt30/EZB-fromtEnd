@@ -20,24 +20,22 @@ export const Data = createContext();
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState({});
   const [sections, setSections] = useState({
     sectionsArr: [],
     data: {},
   });
-  let { userRedux } = useSelector((state) => {
+  const { userRedux } = useSelector((state) => {
     return {
       sectionArr: state.sectionArr,
       data: state.data,
       userRedux: state.user,
     };
   });
-
+  const user =
+    localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
-    setUser(userRedux);
-    if (localStorage.getItem("user")) {
+    if (user) {
       navigate("/", { replace: true });
-      setUser(JSON.parse(localStorage.getItem("user")));
       (async function () {
         const sectionData = await axios.get(
           "http://localhost:5000/users/sections",
@@ -66,7 +64,11 @@ function App() {
     <>
       <ToastContainer />
       <Data.Provider
-        value={{ user, sectionsArr: sections.sectionsArr, data: sections.data }}
+        value={{
+          user: userRedux,
+          sectionsArr: sections.sectionsArr,
+          data: sections.data,
+        }}
       >
         <main>
           {location.pathname !== "/sign-in" && (
@@ -83,7 +85,10 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/sign-in" element={<Login />} />
 
-            {(user?.role === "admin" || user?.role === "ceo") && (
+            {(user?.role === "admin" ||
+              user?.role === "ceo" ||
+              userRedux?.role === "admin" ||
+              userRedux?.role === "ceo") && (
               <>
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/reflection" element={<Reflection />} />

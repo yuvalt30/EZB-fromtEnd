@@ -4,7 +4,7 @@ const budget = createSlice({
   name: "chat-data",
   initialState: {
     data: {},
-    user: {},
+    user: localStorage.getItem("user"),
     sectionArr: [],
     showStartFrom: false,
     outcome: {

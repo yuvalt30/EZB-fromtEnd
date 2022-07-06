@@ -29,13 +29,13 @@ export default function Outcome({ setShow, data, monthIndex }) {
         name: value.section,
         value: performanceSum,
       });
+
       percentArr.push(
         monthTotal !== 0 && value.outcomeBudget
           ? (value.outcomeBudget / monthTotal) * 100
           : 0
       );
     });
-
     dispatch(budgetActions.outcomeChart({ chart: percentArr }));
     dispatch(budgetActions.plannedOutcome(performanceSumArr));
     dispatch(budgetActions.performanceTotal(percentageSum));
@@ -50,7 +50,7 @@ export default function Outcome({ setShow, data, monthIndex }) {
         .slice(JSON.parse(localStorage.getItem("user")).startMonth)
         .concat(monthNo.slice(0, monthIndex))
     );
-  }, [monthIndex]);
+  }, [monthIndex, monthTotal]);
 
   useEffect(() => {
     const monthBudget = [];
@@ -162,7 +162,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
-
+  console.log(value.outcomeBudget, total.monthTotal);
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
     value.outcomeBudget !== 0 &&

@@ -2,13 +2,13 @@ import { Icon } from "@iconify/react";
 import React, { useEffect, useRef, useState } from "react";
 import { forwardRef } from "react";
 import "./Dropdown.scss";
-export const DropdownHead = ({ children, toggle, setToggle }) => {
+export const DropdownHead = ({ children, toggle, setToggle, style }) => {
   return (
     <div
       className="dropdown__select__header"
       onClick={() => setToggle(!toggle)}
     >
-      <p>{children}</p>
+      <p style={style}>{children}</p>
       <Icon
         style={{
           transform: `rotate(${toggle ? 180 : 0}deg)`,
@@ -50,6 +50,7 @@ export const SubsectionDropdown = ({
   const [dropdownToggle, setDropdownToggle] = useState(false);
   const componentRef = useRef();
   const [dropDownName, setDropDownName] = useState("Select a section");
+  const [color, setColor] = useState("#000");
   useEffect(() => {
     document.addEventListener("click", handleClick);
     function handleClick(e) {
@@ -69,6 +70,7 @@ export const SubsectionDropdown = ({
         setToggle={setDropdownToggle}
         toggle={dropdownToggle}
         className="dropdown__select__header"
+        style={{ color }}
       >
         {dropDownName}
       </DropdownHead>
@@ -83,6 +85,7 @@ export const SubsectionDropdown = ({
                 onClick={() => {
                   onChange(value._id);
                   setDropDownName(value.subSection);
+                  setColor(value.isIncome ? "#21c400" : "red");
                 }}
                 style={{ color: value.isIncome ? "#21c400" : "red" }}
               >
