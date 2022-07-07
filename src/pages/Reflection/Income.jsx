@@ -195,7 +195,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
       </td>
       <td
         className={`execution ${
-          percentage > monthPercentage[monthIndex] ? "alert" : ""
+          percentage < monthPercentage[monthIndex] ? "alert" : ""
         }`}
       >
         {percentage.toFixed(2)}%

@@ -23,7 +23,6 @@ export default function Outcome({ setShow, data, monthIndex }) {
       for (let i = 0; i <= monthIndex; i++) {
         performanceSum += value.outcome[i];
       }
-      console.log(performanceSum);
 
       performanceSumArr.push({
         name: value.section,
@@ -162,7 +161,6 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
-  console.log(value.outcomeBudget, total.monthTotal);
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
     value.outcomeBudget !== 0 &&

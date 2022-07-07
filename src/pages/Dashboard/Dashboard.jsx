@@ -123,10 +123,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  if (isLoading) {
-    return <Preloader />;
-  }
-  if (csvSending) {
+  if (isLoading || csvSending || !sectionsArr[0]) {
     return <Preloader />;
   }
 
@@ -137,6 +134,7 @@ export default function Dashboard() {
           <Dropdown
             tittle={"Select section"}
             companyData={sectionsArr}
+            defaultValue={"Select section"}
             onChange={(e) => {
               setSections(e);
             }}
