@@ -26,6 +26,7 @@ import Settings from "../Settings/Settings";
 import SubSectionOutcome from "./SubSectionOutcome";
 import Outcome from "./Outcome";
 import Summery from "./Summery";
+import SubSummary from "./SubSummary";
 
 ChartJS.register(
   ArcElement,
@@ -231,9 +232,9 @@ export default function Reflection() {
     "November",
     "December",
   ];
-
+  const [showCharts, setShowCharts] = useState(false);
   const lineData = {
-    labels: months,
+    labels: linesData.titles || months,
     datasets: [
       {
         label: "Income",
@@ -287,15 +288,34 @@ export default function Reflection() {
               defaultValue={months[date.getMonth()]}
             />
           </div>
-
-          <div>
-            <h2>Income</h2>
-            <Pie data={dataIncome} />
-          </div>
-          <div>
-            <h2>Outcome</h2>
-            <Pie data={dataOutcome} />
-          </div>
+          <button
+            onClick={() => {
+              setShowCharts(true);
+            }}
+          >
+            Show charts
+          </button>
+          {showCharts && (
+            <div className="charts">
+              <div>
+                <div>
+                  <h2>Income</h2>
+                  <Pie data={dataIncome} />
+                </div>
+                <div>
+                  <h2>Outcome</h2>
+                  <Pie data={dataOutcome} />
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowCharts(false);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="section_table">
@@ -366,6 +386,9 @@ export default function Reflection() {
                         data={subSectionData.data}
                         setShow={setShow}
                       />
+                    )}
+                    {subSectionData?.data?.summary[0] && (
+                      <SubSummary data={subSectionData.data} />
                     )}
                     {!subSectionData?.data?.outcome[0] &&
                       !subSectionData?.data?.income[0] && (

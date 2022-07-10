@@ -27,22 +27,22 @@ export default function Login() {
         signIn
       );
       localStorage.setItem("user", JSON.stringify(data.data));
+      dispatch(budgetActions.user(data.data));
       navigate("/", { replace: true });
-      const sectionData = await axios.get(
-        "http://localhost:5000/users/sections",
-        {
-          headers: {
-            Authorization: `Bearer ${data.data.accessToken}`,
-          },
-        }
-      );
-      const sectionsArr = sectionData.data.map((value) => {
-        return value._id;
-      });
+      // const sectionData = await axios.get(
+      //   "http://localhost:5000/users/sections",
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${data.data.accessToken}`,
+      //     },
+      //   }
+      // );
+      // const sectionsArr = sectionData.data.map((value) => {
+      //   return value._id;
+      // });
 
-      dispatch(
-        budgetActions.sectionArr({ sectionsArr, sectionData, user: data.data })
-      );
+      // );
+      setLoad(false);
     } catch (err) {
       setLoad(false);
       ERROR(err.response.data);
@@ -68,7 +68,7 @@ export default function Login() {
             placeholder="Password"
             name="password"
           />
-          <a href="#">Forgot your password?</a>
+          {/* <a href="#">Forgot your password?</a> */}
           <button onClick={signInCall}>Sign In</button>
         </div>
       </div>

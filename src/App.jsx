@@ -15,8 +15,9 @@ import { useSelector } from "react-redux";
 import Settings from "./pages/Settings/Settings";
 import axios from "axios";
 import AllTransactions from "./pages/AllTransactions/AllTransactions";
+import Chart from "bk-react-charts";
+import "bk-react-charts/dist/index.css";
 export const Data = createContext();
-
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,17 +25,16 @@ function App() {
     sectionsArr: [],
     data: {},
   });
-  const { userRedux } = useSelector((state) => {
+  const { userRedux, user } = useSelector((state) => {
     return {
-      sectionArr: state.sectionArr,
-      data: state.data,
       userRedux: state.user,
+      user: state.user,
     };
   });
-  const user =
-    localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     if (user) {
+      console.log(user);
       navigate("/", { replace: true });
       (async function () {
         const sectionData = await axios.get(
@@ -58,7 +58,7 @@ function App() {
         });
       })();
     } else navigate("/sign-in", { replace: true });
-  }, []);
+  }, [user]);
 
   return (
     <>
@@ -81,6 +81,7 @@ function App() {
               />
             </>
           )}
+
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/sign-in" element={<Login />} />

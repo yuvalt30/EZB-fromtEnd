@@ -30,10 +30,19 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
       }
     });
     const monthAVGSum = percentageSum / (monthIndex + 1);
-    setMonthAVG(() =>
-      String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
-    );
+    const varMonth = String(monthAVGSum).includes(".")
+      ? monthAVGSum.toFixed(2)
+      : monthAVGSum;
+    setMonthAVG(varMonth);
     setPerformanceTotal(percentageSum);
+    dispatch(
+      budgetActions.summary({
+        income: {
+          avg: Number(varMonth),
+          performance: Number(percentageSum),
+        },
+      })
+    );
   }, [monthIndex]);
 
   useEffect(() => {

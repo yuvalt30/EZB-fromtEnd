@@ -24,6 +24,7 @@ export default function AllTransactions() {
             }`,
           },
         });
+        console.log(res.data);
         return res.data;
       } catch (err) {
         console.log(err);
@@ -101,6 +102,14 @@ export default function AllTransactions() {
                 data.filter((value) => {
                   return e.includes(value.section.sectionName);
                 })
+              );
+              setSubSectionName(
+                data.reduce((value, curr) => {
+                  e.includes(curr.section.sectionName) &&
+                    !value.includes(curr.section.subSection) &&
+                    value.push(curr.section.subSection);
+                  return value;
+                }, [])
               );
             }}
           />

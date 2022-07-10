@@ -7,7 +7,7 @@ export default function Sidebar({ user }) {
   const logOut = useCallback(() => {
     localStorage.setItem("user", null);
     navigate("/sign-in");
-  }, [localStorage.getItem("user")]);
+  }, []);
 
   return (
     <div className="navigation">

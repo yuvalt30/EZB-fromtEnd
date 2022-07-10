@@ -3,9 +3,8 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 const budget = createSlice({
   name: "chat-data",
   initialState: {
-    data: {},
-    user: localStorage.getItem("user"),
-    sectionArr: [],
+    user:
+      localStorage.getItem("user") && JSON.parse(localStorage.getItem("user")),
     showStartFrom: false,
     outcome: {
       chart: [],
@@ -18,6 +17,16 @@ const budget = createSlice({
     lineData: {
       name: "",
       subId: "",
+    },
+    summary: {
+      income: {
+        avg: 0,
+        performance: 0,
+      },
+      outcome: {
+        avg: 0,
+        performance: 0,
+      },
     },
     performanceTotal: 0,
     plannedIncome: [],
@@ -32,11 +41,13 @@ const budget = createSlice({
       payload.chart && (state.income.chart = payload.chart);
       payload.name && (state.income.name = payload.name);
     },
+    summary(state, { payload }) {
+      payload.income && (state.summary.income = payload.income);
+      payload.outcome && (state.summary.outcome = payload.outcome);
+    },
 
-    sectionArr(state, { payload }) {
-      state.sectionArr = payload.sectionsArr;
-      state.data = payload.sectionData;
-      state.user = payload.user;
+    user(state, { payload }) {
+      state.user = payload;
     },
     lineData(state, { payload }) {
       state.lineData.name = payload.name;

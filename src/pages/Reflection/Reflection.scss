@@ -101,8 +101,11 @@
     border-radius: 1rem;
     overflow: hidden;
     background: #fff;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
-  overflow-y: scroll;
 }
 
 .section_table,
@@ -203,5 +206,35 @@
   }
   .subsection_data {
     background-color: #ff6767 !important;
+  }
+}
+
+.charts {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(58, 58, 58, 0.473);
+  top: 0;
+  left: 0;
+  overflow-y: scroll;
+  z-index: 999;
+  flex-direction: column;
+  gap: 20px;
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    div {
+      padding: 20px;
+      border-radius: 10px;
+      background: #fff;
+    }
+  }
+  canvas {
+    width: clamp(300px, 400px, 600px) !important;
+    height: clamp(300px, 400px, 600px) !important;
   }
 }
