@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useState } from "react";
 import { Icon } from "@iconify/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
 export const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
@@ -11,8 +11,9 @@ export default function Outcome({ setShow, data, monthIndex }) {
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
   const [monthArr, setMonthArr] = useState([]);
+  const [monthPPercent, setMonthPPercent] = useState([]);
   const dispatch = useDispatch();
-
+  const startMonth = useSelector((state) => state.user.startMonth);
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
@@ -28,13 +29,13 @@ export default function Outcome({ setShow, data, monthIndex }) {
         name: value.section,
         value: performanceSum,
       });
-
       percentArr.push(
         monthTotal !== 0 && value.outcomeBudget
           ? (value.outcomeBudget / monthTotal) * 100
           : 0
       );
     });
+
     dispatch(budgetActions.outcomeChart({ chart: percentArr }));
     dispatch(budgetActions.plannedOutcome(performanceSumArr));
     dispatch(budgetActions.performanceTotal(percentageSum));
@@ -47,7 +48,12 @@ export default function Outcome({ setShow, data, monthIndex }) {
     setMonthArr(
       monthNo
         .slice(JSON.parse(localStorage.getItem("user")).startMonth)
-        .concat(monthNo.slice(0, monthIndex))
+        .concat(monthNo.slice(0, monthIndex + 1))
+    );
+    setMonthPPercent(
+      monthPercentage
+        .slice(JSON.parse(localStorage.getItem("user")).startMonth)
+        .concat(monthPercentage.slice(0, monthIndex + 1))
     );
   }, [monthIndex, monthTotal]);
 
@@ -87,8 +93,8 @@ export default function Outcome({ setShow, data, monthIndex }) {
                 <td className="execution" colSpan={3}>
                   Execution in reality
                 </td>
-                {monthPercentage.map((value, i) => {
-                  return i <= monthIndex && <td>{value}%</td>;
+                {monthPPercent.map((value, i) => {
+                  return <td>{value}%</td>;
                 })}
               </tr>
 
@@ -102,11 +108,9 @@ export default function Outcome({ setShow, data, monthIndex }) {
                 <td className="execution">Month avg</td>
                 {monthArr.map((value, i) => {
                   return (
-                    i <= monthIndex && (
-                      <td key={value} className="monthly_budget">
-                        {value}
-                      </td>
-                    )
+                    <td key={value} className="monthly_budget">
+                      {value}
+                    </td>
                   );
                 })}
               </tr>
@@ -118,6 +122,7 @@ export default function Outcome({ setShow, data, monthIndex }) {
                 for (let i = 0; i <= monthIndex; i++) {
                   sum += value.outcome[i];
                 }
+                console.log(monthArr);
                 return (
                   <Row
                     value={value}
@@ -128,6 +133,7 @@ export default function Outcome({ setShow, data, monthIndex }) {
                     i={i}
                     key={"a" + i * 2}
                     monthIndex={monthIndex}
+                    monthArr={monthArr}
                   />
                 );
               })}
@@ -157,10 +163,18 @@ export default function Outcome({ setShow, data, monthIndex }) {
   );
 }
 
-export function Row({ setShow, value, total, monthIndex, performance }) {
+export function Row({
+  setShow,
+  value,
+  total,
+  monthIndex,
+  performance,
+  monthArr,
+}) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
+
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
     value.outcomeBudget !== 0 &&
@@ -194,7 +208,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
       </td>
       <td
         className={`execution ${
-          percentage > monthPercentage[monthIndex] ? "alert" : ""
+          percentage < monthPercentage[monthIndex] ? "alert" : ""
         }`}
       >
         {percentage.toFixed(2)}%
@@ -204,11 +218,11 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
 
       {value.outcome.map((month, i, arr) => {
         return (
-          i <= monthIndex && (
+          i < monthArr.length && (
             <td
               key={month + Math.random()}
               className={`monthly_budget ${
-                month < value.outcomeBudget ? "alert" : ""
+                month > value.outcomeBudget ? "alert" : ""
               }`}
             >
               {month}

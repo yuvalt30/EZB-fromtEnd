@@ -13,31 +13,31 @@ export default function AllTransactions() {
 
   const [tableData, setTableData] = useState([]);
   const [sortOrder, setSortOrder] = useState("ASC");
-  const { data, isFetching } = useQuery(
+  const fetchTransaction = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/transactions/`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("user")).accessToken
+          }`,
+        },
+      });
+      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const { data, isLoading } = useQuery(
     "all-transaction-data",
-    async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/transactions/`, {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("user")).accessToken
-            }`,
-          },
-        });
-        console.log(res.data);
-        return res.data;
-      } catch (err) {
-        console.log(err);
-      }
-    },
+    fetchTransaction,
     {
-      refetchOnWindowFocus: false,
-      initialData: [],
+      refetchOnWindowFocus: true,
     }
   );
   const date = new Date();
   useEffect(() => {
-    if (!isFetching) {
+    if (!isLoading) {
       setTableData(data);
       const sectionNames = data.reduce((value, curr) => {
         !value.includes(curr.section.sectionName) &&
@@ -85,7 +85,7 @@ export default function AllTransactions() {
       }
     }
   }
-  if (isFetching) {
+  if (isLoading) {
     return <Preloader />;
   }
 
@@ -136,7 +136,7 @@ export default function AllTransactions() {
         <div className="reflection all-transactions">
           <div className="section_table">
             <div className="table">
-              <h2>All transactions</h2>
+              <h2>All transactions Income</h2>
 
               <div className="fixTableHead">
                 <table
@@ -171,17 +171,80 @@ export default function AllTransactions() {
                   <tbody>
                     {tableData.map((value, i) => {
                       return (
-                        <>
-                          <tr>
-                            <td>{value.section.sectionName}</td>
-                            <td className="subsection_data">
-                              {value.section.subSection}
-                            </td>
-                            <td className="plan_budget_data">{value.amount}</td>
-                            <td className="execution">{value.description}</td>
-                            <td>{date.toDateString(value.date)}</td>
-                          </tr>
-                        </>
+                        value.section.isIncome && (
+                          <>
+                            <tr>
+                              <td>{value.section.sectionName}</td>
+                              <td className="subsection_data">
+                                {value.section.subSection}
+                              </td>
+                              <td className="plan_budget_data">
+                                {value.amount}
+                              </td>
+                              <td className="execution">{value.description}</td>
+                              <td>{date.toDateString(value.date)}</td>
+                            </tr>
+                          </>
+                        )
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div className="section_table">
+            <div className="table">
+              <h2>All transactions Outcome</h2>
+
+              <div className="fixTableHead">
+                <table
+                  align="center"
+                  border={1}
+                  cellSpacing={0}
+                  cellPadding={5}
+                >
+                  <thead>
+                    <tr>
+                      <td
+                        onClick={() => {
+                          sortData("text", "sectionName");
+                        }}
+                      >
+                        Section
+                      </td>
+                      <td
+                        onClick={() => {
+                          sortData("text", "subSection");
+                        }}
+                        className="subsection_data"
+                      >
+                        Sub Section
+                      </td>
+                      <td className="plan_budget_data">Amount</td>
+                      <td className="execution">Description</td>
+                      <td>Date</td>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {tableData.map((value, i) => {
+                      return (
+                        !value.section.isIncome && (
+                          <>
+                            <tr>
+                              <td>{value.section.sectionName}</td>
+                              <td className="subsection_data">
+                                {value.section.subSection}
+                              </td>
+                              <td className="plan_budget_data">
+                                {value.amount}
+                              </td>
+                              <td className="execution">{value.description}</td>
+                              <td>{date.toDateString(value.date)}</td>
+                            </tr>
+                          </>
+                        )
                       );
                     })}
                   </tbody>

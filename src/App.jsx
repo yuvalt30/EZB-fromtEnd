@@ -35,7 +35,7 @@ function App() {
   useEffect(() => {
     if (user) {
       console.log(user);
-      navigate("/", { replace: true });
+      navigate("/all-transactions", { replace: true });
       (async function () {
         const sectionData = await axios.get(
           "http://localhost:5000/users/sections",

@@ -28,7 +28,7 @@ export default function Login() {
       );
       localStorage.setItem("user", JSON.stringify(data.data));
       dispatch(budgetActions.user(data.data));
-      navigate("/", { replace: true });
+      navigate("/all-transactions", { replace: true });
       // const sectionData = await axios.get(
       //   "http://localhost:5000/users/sections",
       //   {

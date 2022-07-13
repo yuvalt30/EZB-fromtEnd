@@ -10,25 +10,12 @@ import { ERROR, Success } from "../../utils/toasts";
 import "./Settings.scss";
 
 export default function Settings() {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const months = ["January", "September"];
   const dispatch = useDispatch();
   const [showStart, setShowStart] = useState(false);
   async function sendMonth() {
     try {
-      const res = await axios.put(`http://localhost:5000/users/${month}`, {
+      const res = await axios.post(`http://localhost:5000/users/${month}`, {
         headers: {
           Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("user")).accessToken

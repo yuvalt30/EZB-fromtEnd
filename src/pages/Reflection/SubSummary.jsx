@@ -1,10 +1,6 @@
-import React, { useEffect, useId, useState } from "react";
-import { Icon } from "@iconify/react";
-import { useDispatch, useSelector } from "react-redux";
-import { budgetActions } from "../../store";
-import { monthNo } from "./Reflection";
+import React from "react";
 
-const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
+import { useSelector } from "react-redux";
 
 export default function SubSummary({ setShow, data = [], monthIndex }) {
   const summary = useSelector((state) => state.summary);
@@ -18,8 +14,8 @@ export default function SubSummary({ setShow, data = [], monthIndex }) {
             <thead>
               <tr>
                 <td>Section</td>
-                <td className="plan_budget_data">1</td>
-                <td className="execution">2</td>
+                <td className="plan_budget_data">Month avg</td>
+                <td className="execution">Performance</td>
                 {data.summary.map((value, i) => {
                   return (
                     <td key={"c" + i} className="monthly_budget">
@@ -34,13 +30,13 @@ export default function SubSummary({ setShow, data = [], monthIndex }) {
               <tr>
                 <td>Section</td>
                 <td className="plan_budget_data">
-                  {summary.income.avg - summary.outcome.avg}
+                  {(summary.income.avg - summary.outcome.avg).toFixed(2)}
                 </td>
                 <td className="execution">
                   {summary.income.performance - summary.outcome.performance}
                 </td>
                 {data?.summary.map((value, i) => {
-                  return <td>{value}</td>;
+                  return <td className="monthly_budget">{value}</td>;
                 })}
               </tr>
             </tbody>

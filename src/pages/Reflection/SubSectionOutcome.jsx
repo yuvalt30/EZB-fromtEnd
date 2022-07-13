@@ -170,9 +170,9 @@ export function Row({
     <tr>
       <td
         onClick={() => {
-          setShow("show-date");
+          setShow("show-sub-date");
           dispatch(
-            budgetActions.lineData({ name: value.section, subId: value._id })
+            budgetActions.selectedSub({ name: value.section, subId: value._id })
           );
         }}
       >

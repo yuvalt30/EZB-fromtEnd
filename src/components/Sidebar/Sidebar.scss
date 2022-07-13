@@ -95,3 +95,14 @@
     }
   }
 }
+
+.nav_divider {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.568);
+  width: 100%;
+  border-radius: 60px;
+  width: 85%;
+  margin: auto;
+  transform: translateX(-10px);
+  margin-bottom: 10px;
+}

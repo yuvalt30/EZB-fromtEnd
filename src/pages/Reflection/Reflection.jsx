@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./Reflection.scss";
 import {
   Chart as ChartJS,
@@ -27,6 +27,7 @@ import SubSectionOutcome from "./SubSectionOutcome";
 import Outcome from "./Outcome";
 import Summery from "./Summery";
 import SubSummary from "./SubSummary";
+import { getNewColor } from "../../utils/colorGenarator";
 
 ChartJS.register(
   ArcElement,
@@ -46,15 +47,21 @@ export default function Reflection() {
   const [show, setShow] = useState("");
   const [dates, setDates] = useState({ begin: "", end: "" });
   const [linesData, setLinesData] = useState([]);
-
-  const { selectedSec, subId, outcome, income } = useSelector((state) => {
-    return {
-      selectedSec: state.lineData.name,
-      subId: state.lineData.subId,
-      outcome: state.outcome,
-      income: state.income,
-    };
+  const { selectedSec, subId, outcome, income, selectedSub } = useSelector(
+    (state) => {
+      return {
+        selectedSec: state.lineData.name,
+        subId: state.lineData.subId,
+        outcome: state.outcome,
+        income: state.income,
+        selectedSub: state.selectedSub,
+      };
+    }
+  );
+  const incomeColor = income.chart.map((value) => {
+    return getNewColor();
   });
+
   const dataIncome = {
     labels: income.name,
 
@@ -67,22 +74,8 @@ export default function Reflection() {
             display: false,
           },
         },
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
+        backgroundColor: incomeColor,
+        borderColor: ["#fff"],
         borderWidth: 1,
       },
     ],
@@ -118,15 +111,15 @@ export default function Reflection() {
   });
 
   const {
-    data: subSectionData,
-    isLoading: subSectionFetching,
-    refetch: subSectionFetch,
-  } = useQuery("sub-section-data", getSubsection, {
+    data: subSectionTable,
+    isFetching: subSectionTableFetching,
+    refetch: subSectionTableFetch,
+  } = useQuery("sub-section-table-data", getSubsectionTable, {
     refetchOnWindowFocus: false,
     enabled: false,
   });
 
-  async function getSubsection() {
+  async function getSubsectionTable() {
     try {
       const res = await axios.get(
         `http://localhost:5000/tracks/sec?secName=${selectedSec}`
@@ -139,12 +132,12 @@ export default function Reflection() {
 
   useEffect(() => {
     if (selectedSec) {
-      subSectionFetch();
+      subSectionTableFetch();
     }
   }, [selectedSec]);
 
   const dataOutcome = {
-    labels: [],
+    labels: outcome.name,
     datasets: [
       {
         label: "# of Votes",
@@ -174,11 +167,8 @@ export default function Reflection() {
   const options = {
     plugins: {
       legend: {
-        display: false,
+        display: true,
       },
-    },
-    datalabels: {
-      display: false,
     },
   };
 
@@ -239,24 +229,24 @@ export default function Reflection() {
       {
         label: "Income",
         data: linesData.income,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "#63ff85",
+        backgroundColor: "#63ff8576",
       },
       {
         label: "Outcome",
         data: linesData.outcome,
-        borderColor: "#3549fd",
-        backgroundColor: "#3549fd78",
+        borderColor: "#fd3535",
+        backgroundColor: "#fd3535a4",
       },
     ],
   };
 
   const subLineData = {
-    labels: months,
+    labels: linesData?.titles,
     datasets: [
       {
         label: "Sub section",
-        data: linesData,
+        data: linesData?.data,
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
@@ -269,7 +259,7 @@ export default function Reflection() {
     setMonthIndex(date.getMonth());
   }, []);
 
-  if (isLoading || gettingLineData || subSectionFetching) {
+  if (isLoading || gettingLineData || subSectionTableFetching) {
     return <Preloader />;
   }
 
@@ -286,6 +276,14 @@ export default function Reflection() {
                 setMonthIndex(e);
               }}
               defaultValue={months[date.getMonth()]}
+            />
+            <Dropdown
+              tittle={"Select year"}
+              companyData={[2022, 2021]}
+              getIndex={(e) => {
+                setMonthIndex(e);
+              }}
+              defaultValue={2022}
             />
           </div>
           <button
@@ -347,7 +345,9 @@ export default function Reflection() {
                   <Icon
                     className="back"
                     onClick={() => {
-                      setShow("menu");
+                      setShow(
+                        show === "show-sub-date" ? "sub-section" : "menu"
+                      );
                     }}
                     icon="eva:arrow-ios-back-outline"
                   />
@@ -373,25 +373,25 @@ export default function Reflection() {
                 )}
                 {show === "sub-section" && (
                   <>
-                    {subSectionData?.data?.income[0] && (
+                    {subSectionTable?.data?.income[0] && (
                       <SubSectionIncome
                         monthIndex={monthIndex}
-                        data={subSectionData.data}
+                        data={subSectionTable.data}
                         setShow={setShow}
                       />
                     )}
-                    {subSectionData?.data?.outcome[0] && (
+                    {subSectionTable?.data?.outcome[0] && (
                       <SubSectionOutcome
                         monthIndex={monthIndex}
-                        data={subSectionData.data}
+                        data={subSectionTable.data}
                         setShow={setShow}
                       />
                     )}
-                    {subSectionData?.data?.summary[0] && (
-                      <SubSummary data={subSectionData.data} />
+                    {subSectionTable?.data?.summary[0] && (
+                      <SubSummary data={subSectionTable.data} />
                     )}
-                    {!subSectionData?.data?.outcome[0] &&
-                      !subSectionData?.data?.income[0] && (
+                    {!subSectionTable?.data?.outcome[0] &&
+                      !subSectionTable?.data?.income[0] && (
                         <p>No data available</p>
                       )}
                   </>
@@ -403,7 +403,7 @@ export default function Reflection() {
                     data={subId ? subLineData : lineData}
                   />
                 )}
-                {show === "show-date" && (
+                {show === "show-sub-date" && (
                   <div>
                     <Input
                       type={"date"}

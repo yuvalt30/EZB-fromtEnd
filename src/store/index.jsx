@@ -10,6 +10,7 @@ const budget = createSlice({
       chart: [],
       name: [],
     },
+    selectedSub: "",
     income: {
       chart: [],
       name: [],
@@ -48,6 +49,9 @@ const budget = createSlice({
 
     user(state, { payload }) {
       state.user = payload;
+    },
+    selectedSub(state, { payload }) {
+      state.selectedSub = payload;
     },
     lineData(state, { payload }) {
       state.lineData.name = payload.name;
