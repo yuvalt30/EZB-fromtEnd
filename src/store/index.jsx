@@ -10,7 +10,7 @@ const budget = createSlice({
       chart: [],
       name: [],
     },
-    selectedSub: "",
+    selectedSub: {},
     income: {
       chart: [],
       name: [],

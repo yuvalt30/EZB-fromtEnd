@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 export default function SubSummary({ setShow, data = [], monthIndex }) {
   const summary = useSelector((state) => state.summary);
-  console.log(summary);
+
   return (
     <>
       <div className="table">
@@ -18,9 +18,11 @@ export default function SubSummary({ setShow, data = [], monthIndex }) {
                 <td className="execution">Performance</td>
                 {data.summary.map((value, i) => {
                   return (
-                    <td key={"c" + i} className="monthly_budget">
-                      {i + 1}
-                    </td>
+                    i <= monthIndex && (
+                      <td key={"c" + i} className="monthly_budget">
+                        {i + 1}
+                      </td>
+                    )
                   );
                 })}
               </tr>
@@ -36,7 +38,11 @@ export default function SubSummary({ setShow, data = [], monthIndex }) {
                   {summary.income.performance - summary.outcome.performance}
                 </td>
                 {data?.summary.map((value, i) => {
-                  return <td className="monthly_budget">{value}</td>;
+                  return (
+                    i <= monthIndex && (
+                      <td className="monthly_budget">{value}</td>
+                    )
+                  );
                 })}
               </tr>
             </tbody>

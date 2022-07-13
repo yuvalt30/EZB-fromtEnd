@@ -34,7 +34,6 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       navigate("/all-transactions", { replace: true });
       (async function () {
         const sectionData = await axios.get(

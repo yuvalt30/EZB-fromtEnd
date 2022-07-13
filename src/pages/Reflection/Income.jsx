@@ -70,7 +70,6 @@ export default function Income({ setShow, data, monthIndex }) {
     data.income.forEach((value, i) => {
       percentArr.push(((value.incomeBudget / monthTotal) * 100).toFixed(2));
     });
-    console.log(monthSumTotal);
     dispatch(budgetActions.incomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
@@ -122,7 +121,6 @@ export default function Income({ setShow, data, monthIndex }) {
                 for (let i = 0; i <= monthIndex; i++) {
                   sum += value.income[i];
                 }
-                console.log(monthArr);
                 return (
                   <Row
                     value={value}
@@ -147,7 +145,7 @@ export default function Income({ setShow, data, monthIndex }) {
                 <td className="execution">{monthAVG}</td>
                 {monthSum.map((value, i) => {
                   return (
-                    i <= monthIndex && (
+                    i <= monthArr.length && (
                       <td key={id + Math.random()} className="monthly_budget">
                         {value}
                       </td>

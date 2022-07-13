@@ -46,18 +46,14 @@ export const monthNo = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 export default function Reflection() {
   const [show, setShow] = useState("");
   const [dates, setDates] = useState({ begin: "", end: "" });
-  const [linesData, setLinesData] = useState([]);
-  const { selectedSec, subId, outcome, income, selectedSub } = useSelector(
-    (state) => {
-      return {
-        selectedSec: state.lineData.name,
-        subId: state.lineData.subId,
-        outcome: state.outcome,
-        income: state.income,
-        selectedSub: state.selectedSub,
-      };
-    }
-  );
+  const { selectedSec, subId, outcome, income } = useSelector((state) => {
+    return {
+      selectedSec: state.lineData.name,
+      subId: state.selectedSub.subId,
+      outcome: state.outcome,
+      income: state.income,
+    };
+  });
   const incomeColor = income.chart.map((value) => {
     return getNewColor();
   });
@@ -172,42 +168,49 @@ export default function Reflection() {
     },
   };
 
-  async function fetchLineData() {
-    if (subId) {
-      const res = await axios.get(
-        `http://localhost:5000/tracks/past?begin=${dates.begin
-          .split("-")
-          .reverse()
-          .join("/")}&subId=${subId}&end=${dates.end
-          .split("-")
-          .reverse()
-          .join("/")}&sectionName=${selectedSec}`
-      );
-
-      setLinesData(res.data);
-    } else {
-      const res = await axios.get(
-        `http://localhost:5000/tracks/past?begin=${dates.begin
-          .split("-")
-          .reverse()
-          .join("/")}&end=${dates.end
-          .split("-")
-          .reverse()
-          .join("/")}&sectionName=${selectedSec}`
-      );
-      setLinesData(res.data);
-    }
+  async function fetchSecLineData() {
+    const res = await axios.get(
+      `http://localhost:5000/tracks/past?begin=${dates.begin
+        .split("-")
+        .reverse()
+        .join("/")}&end=${dates.end
+        .split("-")
+        .reverse()
+        .join("/")}&sectionName=${selectedSec}`
+    );
+    return res.data;
   }
 
-  const { isFetching: gettingLineData, refetch: getLineData } = useQuery(
-    "fetch-line",
-    fetchLineData,
-    {
-      enabled: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  async function fetchSubLineData() {
+    const res = await axios.get(
+      `http://localhost:5000/tracks/past?begin=${dates.begin
+        .split("-")
+        .reverse()
+        .join("/")}&subId=${subId}&end=${dates.end
+        .split("-")
+        .reverse()
+        .join("/")}&sectionName=${selectedSec}`
+    );
+    return res.data;
+  }
+  const {
+    isFetching: gettingLineData,
+    refetch: getLineData,
+    data: lineSecData,
+  } = useQuery("fetch-line", fetchSecLineData, {
+    enabled: false,
+    refetchOnWindowFocus: false,
+  });
 
+  const {
+    isFetching: gettingSubLineData,
+    refetch: getSubLineData,
+    data: lineSubData,
+  } = useQuery("fetch-sub-line", fetchSubLineData, {
+    enabled: false,
+    refetchOnWindowFocus: false,
+  });
+  console.log(lineSubData);
   const months = [
     "January",
     "February",
@@ -223,32 +226,32 @@ export default function Reflection() {
     "December",
   ];
   const [showCharts, setShowCharts] = useState(false);
-  const lineData = {
-    labels: linesData.titles || months,
+
+  const lineSecDataChart = {
+    labels: lineSecData?.titles || months,
     datasets: [
       {
         label: "Income",
-        data: linesData.income,
+        data: lineSecData?.income || [],
         borderColor: "#63ff85",
         backgroundColor: "#63ff8576",
       },
       {
         label: "Outcome",
-        data: linesData.outcome,
+        data: lineSecData?.outcome || [],
         borderColor: "#fd3535",
         backgroundColor: "#fd3535a4",
       },
     ],
   };
-
-  const subLineData = {
-    labels: linesData?.titles,
+  const lineSubDataChart = {
+    labels: lineSubData?.titles || months,
     datasets: [
       {
-        label: "Sub section",
-        data: linesData?.data,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        label: "Income",
+        data: lineSubData?.data || [],
+        borderColor: "#63b4ff",
+        backgroundColor: "#63a7ff76",
       },
     ],
   };
@@ -259,7 +262,12 @@ export default function Reflection() {
     setMonthIndex(date.getMonth());
   }, []);
 
-  if (isLoading || gettingLineData || subSectionTableFetching) {
+  if (
+    isLoading ||
+    gettingLineData ||
+    subSectionTableFetching ||
+    gettingSubLineData
+  ) {
     return <Preloader />;
   }
 
@@ -345,9 +353,17 @@ export default function Reflection() {
                   <Icon
                     className="back"
                     onClick={() => {
-                      setShow(
-                        show === "show-sub-date" ? "sub-section" : "menu"
-                      );
+                      setShow((prev) => {
+                        switch (prev) {
+                          case "line-sub-chart":
+                            return "sub-section";
+                          case "show-sub-date":
+                            return "sub-section";
+
+                          default:
+                            return "menu";
+                        }
+                      });
                     }}
                     icon="eva:arrow-ios-back-outline"
                   />
@@ -388,7 +404,10 @@ export default function Reflection() {
                       />
                     )}
                     {subSectionTable?.data?.summary[0] && (
-                      <SubSummary data={subSectionTable.data} />
+                      <SubSummary
+                        data={subSectionTable.data}
+                        monthIndex={monthIndex}
+                      />
                     )}
                     {!subSectionTable?.data?.outcome[0] &&
                       !subSectionTable?.data?.income[0] && (
@@ -400,10 +419,45 @@ export default function Reflection() {
                   <Line
                     className="line-chart"
                     options={options}
-                    data={subId ? subLineData : lineData}
+                    data={lineSecDataChart}
+                  />
+                )}
+                {show === "line-sub-chart" && (
+                  <Line
+                    className="line-chart"
+                    options={options}
+                    data={lineSubDataChart}
                   />
                 )}
                 {show === "show-sub-date" && (
+                  <div>
+                    <Input
+                      type={"date"}
+                      onChange={(e) => {
+                        setDates({ ...dates, begin: e.target.value });
+                      }}
+                    >
+                      From
+                    </Input>
+                    <Input
+                      onChange={(e) => {
+                        setDates({ ...dates, end: e.target.value });
+                      }}
+                      type={"date"}
+                    >
+                      To
+                    </Input>
+                    <button
+                      onClick={() => {
+                        setShow("line-sub-chart");
+                        getSubLineData();
+                      }}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                )}
+                {show === "show-date" && (
                   <div>
                     <Input
                       type={"date"}

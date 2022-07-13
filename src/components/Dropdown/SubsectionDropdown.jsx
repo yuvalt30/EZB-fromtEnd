@@ -77,7 +77,6 @@ export const SubsectionDropdown = ({
       {dropdownToggle && (
         <DropdownSelect onClick={() => setDropdownToggle(false)}>
           {companyData[0].subSections.map((value, i) => {
-            console.log(value);
             return (
               <DropdownOption
                 key={"g" + (i * 3) / 100}

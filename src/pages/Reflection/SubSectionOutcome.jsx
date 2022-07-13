@@ -60,7 +60,7 @@ export default function SubSectionOutcome({ setShow, data, monthIndex }) {
   return (
     <>
       <div className="table">
-        <h2>{selectedSec}</h2>
+        <h2>Outcome {selectedSec}</h2>
         <div className="fixTableHead">
           <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>

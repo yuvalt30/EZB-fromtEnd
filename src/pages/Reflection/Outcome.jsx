@@ -70,7 +70,6 @@ export default function Outcome({ setShow, data, monthIndex }) {
     data.outcome.forEach((value, i) => {
       percentArr.push(((value.outcomeBudget / monthTotal) * 100).toFixed(2));
     });
-    console.log(monthSumTotal);
     dispatch(budgetActions.outcomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
@@ -122,7 +121,6 @@ export default function Outcome({ setShow, data, monthIndex }) {
                 for (let i = 0; i <= monthIndex; i++) {
                   sum += value.outcome[i];
                 }
-                console.log(monthArr);
                 return (
                   <Row
                     value={value}

@@ -69,7 +69,3 @@ export default function Settings() {
     </div>
   );
 }
-// setMonthNo();
-// let arr = monthArr;
-// const x = arr.slice(e);
-// setMonthNo(x.concat(arr.slice(0, e)));

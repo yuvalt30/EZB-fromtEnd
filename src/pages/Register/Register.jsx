@@ -77,7 +77,6 @@ export default function Register() {
     }
     if (empty) {
       Warn("Fill all data");
-      console.log(empty);
     } else {
       if (user.role === "admin" && !permissions[0]) {
         Warn("Fill all data");

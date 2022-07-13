@@ -22,7 +22,6 @@ export default function AllTransactions() {
           }`,
         },
       });
-      console.log(res.data);
       return res.data;
     } catch (err) {
       console.log(err);
