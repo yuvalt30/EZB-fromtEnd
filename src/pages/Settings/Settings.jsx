@@ -15,13 +15,15 @@ export default function Settings() {
   const [showStart, setShowStart] = useState(false);
   async function sendMonth() {
     try {
-      const res = await axios.post(`http://localhost:5000/users/${month}`, {
+      const res = await axios.get(`http://localhost:5000/users/${month}`, 
+      {  
         headers: {
           Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("user")).accessToken
           }`,
         },
-      });
+      }
+      );
       Success("Completed");
       return res;
     } catch (err) {
