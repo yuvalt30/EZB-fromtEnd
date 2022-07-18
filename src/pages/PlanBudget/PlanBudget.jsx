@@ -163,21 +163,16 @@ export default function PlanBudget() {
         </div>
         <hr className="divider" />
         <ol className="instruction">
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
+        <li>
+            create a new section by inserting its name and its income and outcome sub sections, seperated by comma. [subIn1,subIn2]
           </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
+        <li>
+          another option is to upload a CSV file with transactions, where each line in file is a transaction.
+        </li>
+        <li>
+          line's format: secA,sub1,sub2,sub3. <br/>[first element is saction name, followed by its sub sections]<br/>
+          first will be the income sub sections, and then a line with '&', then outcome sub sections.
+        </li>
         </ol>
       </div>
       <div>
