@@ -24,18 +24,20 @@ export default function Budget() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         let text = e.target.result;
-        text = text.split("\r\n");
-        text.forEach((value) => {
-          const data = value.split(",");
-          const obj = {
-            description: data[0].trim(),
-            amount: data[1].trim(),
-            date: data[2].trim(),
-            subSection: data[4].trim(),
-            sectionName: data[3].trim(),
-          };
-          setCsvData((prev) => [...prev, obj]);
-        });
+        let stripped = text.split("\'").join('').split("-").join('').strip('\t').join('') // strip
+        stripped.split('\r\n').forEach(line => {
+          let words = line.split(',')
+          if(words[0] && words[2])
+          {
+            const obj = {
+                  sectionName: words[0],
+                  subSections: words[1],
+                  amount: words[2],
+                  year: words[3],
+            }
+            setCsvData((prev) => [...prev, obj]);
+          }
+      });
       };
       reader.readAsText(e.target.files[0]);
     } else {
@@ -45,8 +47,11 @@ export default function Budget() {
   async function sendCsv() {
     try {
       const response = await axios.post(
-        "http://localhost:5000/transactions/file",  // add isIncome : true/false
-        { transactions: csvData },
+        "http://localhost:5000/transactions/file",
+        { 
+          transactions: csvData,
+          isIncome: true // get this value from a dropdown
+        },
         {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
