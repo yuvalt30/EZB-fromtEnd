@@ -18,24 +18,26 @@ export default function Budget() {
   const [csvFile, setCsvFile] = useState({});
   const [csvData, setCsvData] = useState([]);
 
-  async function handleCsv(e) {
+  async function handleCsv(e) { // change to be for a format of [ subSection, sectionName, isIncome ]
     if (e.target.files[0].type === "text/csv") {
       setCsvFile(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = async (e) => {
         let text = e.target.result;
-        text = text.split("\r\n");
-        text.forEach((value) => {
-          const data = value.split(",");
-          const obj = {
-            description: data[0].trim(),
-            amount: data[1].trim(),
-            date: data[2].trim(),
-            subSection: data[4].trim(),
-            sectionName: data[3].trim(),
-          };
-          setCsvData((prev) => [...prev, obj]);
-        });
+        let stripped = text.split("\'").join('').split("-").join('').strip('\t').join('') // strip
+        stripped.split('\r\n').forEach(line => {
+          let words = line.split(',')
+          if(words[0] && words[2])
+          {
+            const obj = {
+                  sectionName: words[0],
+                  subSections: words[1],
+                  amount: words[2],
+                  year: words[3],
+            }
+            setCsvData((prev) => [...prev, obj]);
+          }
+      });
       };
       reader.readAsText(e.target.files[0]);
     } else {
@@ -46,7 +48,10 @@ export default function Budget() {
     try {
       const response = await axios.post(
         "http://localhost:5000/transactions/file",
-        { transactions: csvData },
+        { 
+          transactions: csvData,
+          isIncome: true // get this value from a dropdown
+        },
         {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
@@ -143,21 +148,18 @@ export default function Budget() {
         </div>
         <hr className="divider" />
         <ol className="instruction">
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
+        <li>
+          Insert new budget to a sub sectionddddddddddddddddddddddd from the list of permitted section.
+          Enter not negative number as amount.
+          Optionally add a description and/or a date. (default date is today)
+        </li>
+        <li>
+          another option is to upload a CSV file with transactions, where each line in file is a transaction.
+        </li>
+        <li>
+          line's format: secA,sub1,sub2,sub3. <br/>[first element is saction name, followed by its sub sections]<br/>
+          first will be the income sub sections, and then a line with '&', then outcome sub sections.
+        </li>
         </ol>
       </div>
       <div>

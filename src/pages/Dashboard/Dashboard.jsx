@@ -103,7 +103,10 @@ export default function Dashboard() {
     try {
       const response = await axios.post(
         "http://localhost:5000/transactions/file",
-        { transactions: csvData },
+        {
+          transactions: csvData,
+          isIncome: true  // get this value from a dropdown
+        },
         {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
@@ -216,21 +219,19 @@ export default function Dashboard() {
         </div>
       </div>
       <ol className="instruction">
-        <li>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-          nihil animi aperiam voluptates inventore ratione consectetur iusto,
-          esse delectus. Quam.
+      <li>
+          Insert new transaction to a section from the list of permitted section.
+          Enter not negative number as amount.
+          Optionally add a description and/or a date. (default date is today)
         </li>
-        <li>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-          nihil animi aperiam voluptates inventore ratione consectetur iusto,
-          esse delectus. Quam.
-        </li>
-        <li>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-          nihil animi aperiam voluptates inventore ratione consectetur iusto,
-          esse delectus. Quam.
-        </li>
+      
+          <li>
+          Another Option Is To Upload A CSV File With budget sections to create, Where Each Line In File Is A new section.
+          </li>
+          <li>
+          Line's Format: description, amount, date, sectionName, subSection.<br/>
+          </li>
+        
       </ol>
     </div>
   );

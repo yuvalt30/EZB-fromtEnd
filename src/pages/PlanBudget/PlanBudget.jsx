@@ -23,33 +23,34 @@ export default function PlanBudget() {
       reader.onload = async (e) => {
         let str = e.target.result;
         let result = {
-          incomes: [],
+          sections: [],
           outcomes: [],
+          isIncome: true, // get this value from a dropdown
         };
         let stripped = str.split('"').join(""); // strip
-        stripped = stripped.split("&"); // divide income & outcome
-        // incomes
+        // stripped = stripped.split("&"); // divide income & outcome 
+        // sections
         stripped[0].split("\r\n").forEach((line) => {
           let words = line.split(",").map((value) => {
             return value.trim();
           });
           if (words[0])
-            result.incomes.push({
+            result.sections.push({
               sectionName: words[0],
               subSections: words.slice(1, words.length),
             });
         });
         //outcomes
-        stripped[1].split("\r\n").forEach((line) => {
-          let words = line.split(",").map((value) => {
-            return value.trim();
-          });
-          if (words[0])
-            result.outcomes.push({
-              sectionName: words[0],
-              subSections: words.slice(1, words.length),
-            });
-        });
+        // stripped[1].split("\r\n").forEach((line) => {
+        //   let words = line.split(",").map((value) => {
+        //     return value.trim();
+        //   });
+        //   if (words[0])
+        //     result.outcomes.push({
+        //       sectionName: words[0],
+        //       subSections: words.slice(1, words.length),
+        //     });
+        // });
         setCsvData(result);
       };
       reader.readAsText(e.target.files[0]);
@@ -164,21 +165,16 @@ export default function PlanBudget() {
         </div>
         <hr className="divider" />
         <ol className="instruction">
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
+        <li>
+            create a new section by inserting its name and its income and outcome sub sections, seperated by comma. [subIn1,subIn2]
           </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
-            nihil animi aperiam voluptates inventore ratione consectetur iusto,
-            esse delectus. Quam.
-          </li>
+        <li>
+          another option is to upload a CSV file with transactions, where each line in file is a transaction.
+        </li>
+        <li>
+          line's format: secA,sub1,sub2,sub3. <br/>[first element is saction name, followed by its sub sections]<br/>
+          first will be the income sub sections, and then a line with '&', then outcome sub sections.
+        </li>
         </ol>
       </div>
       <div>
