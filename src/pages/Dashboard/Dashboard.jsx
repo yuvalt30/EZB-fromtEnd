@@ -102,7 +102,10 @@ export default function Dashboard() {
     try {
       const response = await axios.post(
         "http://localhost:5000/transactions/file",
-        { transactions: csvData }, // add isIncome : true/false
+        {
+          transactions: csvData,
+          isIncome: true  // get this value from a dropdown
+        },
         {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,

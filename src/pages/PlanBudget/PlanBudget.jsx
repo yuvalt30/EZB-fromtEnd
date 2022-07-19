@@ -22,34 +22,34 @@ export default function PlanBudget() {
       reader.onload = async (e) => {
         let str = e.target.result;
         let result = {
-          incomes: [],
+          sections: [],
           outcomes: [],
-          isIncome: true, // add here a value from a dropdown
+          isIncome: true, // get this value from a dropdown
         };
         let stripped = str.split('"').join(""); // strip
-        stripped = stripped.split("&"); // divide income & outcome  <-- delete
-        // incomes
+        // stripped = stripped.split("&"); // divide income & outcome 
+        // sections
         stripped[0].split("\r\n").forEach((line) => {
           let words = line.split(",").map((value) => {
             return value.trim();
           });
           if (words[0])
-            result.incomes.push({
+            result.sections.push({
               sectionName: words[0],
               subSections: words.slice(1, words.length),
             });
         });
         //outcomes
-        stripped[1].split("\r\n").forEach((line) => {
-          let words = line.split(",").map((value) => {
-            return value.trim();
-          });
-          if (words[0])
-            result.outcomes.push({
-              sectionName: words[0],
-              subSections: words.slice(1, words.length),
-            });
-        });
+        // stripped[1].split("\r\n").forEach((line) => {
+        //   let words = line.split(",").map((value) => {
+        //     return value.trim();
+        //   });
+        //   if (words[0])
+        //     result.outcomes.push({
+        //       sectionName: words[0],
+        //       subSections: words.slice(1, words.length),
+        //     });
+        // });
         setCsvData(result);
       };
       reader.readAsText(e.target.files[0]);
