@@ -18,7 +18,7 @@ export default function Budget() {
   const [csvFile, setCsvFile] = useState({});
   const [csvData, setCsvData] = useState([]);
 
-  async function handleCsv(e) {
+  async function handleCsv(e) { // change to be for a format of [ subSection, sectionName, isIncome ]
     if (e.target.files[0].type === "text/csv") {
       setCsvFile(e.target.files[0]);
       const reader = new FileReader();
@@ -45,7 +45,7 @@ export default function Budget() {
   async function sendCsv() {
     try {
       const response = await axios.post(
-        "http://localhost:5000/transactions/file",
+        "http://localhost:5000/transactions/file",  // add isIncome : true/false
         { transactions: csvData },
         {
           headers: {

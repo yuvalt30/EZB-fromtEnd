@@ -24,9 +24,10 @@ export default function PlanBudget() {
         let result = {
           incomes: [],
           outcomes: [],
+          isIncome: true, // add here a value from a dropdown
         };
         let stripped = str.split('"').join(""); // strip
-        stripped = stripped.split("&"); // divide income & outcome
+        stripped = stripped.split("&"); // divide income & outcome  <-- delete
         // incomes
         stripped[0].split("\r\n").forEach((line) => {
           let words = line.split(",").map((value) => {
