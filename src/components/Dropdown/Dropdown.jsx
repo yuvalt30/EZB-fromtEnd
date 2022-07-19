@@ -46,6 +46,7 @@ export const Dropdown = ({
   tittle,
   defaultValue,
   getIndex,
+  ...rest
 }) => {
   const [dropdownToggle, setDropdownToggle] = useState(false);
   const componentRef = useRef();
@@ -70,7 +71,7 @@ export const Dropdown = ({
   }, [defaultValue]);
 
   return (
-    <div ref={componentRef} className="dropdown">
+    <div ref={componentRef} className="dropdown" {...rest}>
       <p style={{ marginBottom: 18 }}>{tittle}</p>
       <DropdownHead
         setToggle={setDropdownToggle}

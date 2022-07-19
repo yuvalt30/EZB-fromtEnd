@@ -146,6 +146,9 @@
       .execution {
         background: #f49375;
       }
+      .predict {
+        background: #ff78b7;
+      }
     }
     .plan_budget_data {
       background-color: #9bf8e1;
@@ -237,4 +240,12 @@
     width: clamp(300px, 530px, 600px) !important;
     height: clamp(300px, 530px, 600px) !important;
   }
+}
+
+.sub-section-title {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
 }

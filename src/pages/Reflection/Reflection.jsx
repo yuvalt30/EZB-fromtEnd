@@ -210,7 +210,6 @@ export default function Reflection() {
     enabled: false,
     refetchOnWindowFocus: false,
   });
-  console.log(lineSubData);
   const months = [
     "January",
     "February",
@@ -282,6 +281,7 @@ export default function Reflection() {
               companyData={months}
               getIndex={(e) => {
                 setMonthIndex(e);
+                console.log(e);
               }}
               defaultValue={months[date.getMonth()]}
             />

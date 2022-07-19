@@ -90,7 +90,7 @@
       border-radius: 500px;
     }
     li:nth-child(1) {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       pointer-events: none;
     }
   }
@@ -105,4 +105,17 @@
   margin: auto;
   transform: translateX(-10px);
   margin-bottom: 10px;
+}
+
+.header-nav {
+  text-align: center;
+  padding-top: 1rem;
+  color: #fff;
+  span {
+    font-size: 15px;
+    font-weight: 400;
+  }
+  h3 {
+    font-size: 2rem;
+  }
 }

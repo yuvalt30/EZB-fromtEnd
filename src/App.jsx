@@ -15,8 +15,6 @@ import { useSelector } from "react-redux";
 import Settings from "./pages/Settings/Settings";
 import axios from "axios";
 import AllTransactions from "./pages/AllTransactions/AllTransactions";
-import Chart from "bk-react-charts";
-import "bk-react-charts/dist/index.css";
 export const Data = createContext();
 function App() {
   const location = useLocation();

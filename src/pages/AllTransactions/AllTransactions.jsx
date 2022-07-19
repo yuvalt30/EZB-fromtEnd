@@ -172,7 +172,7 @@ export default function AllTransactions() {
                       return (
                         value.section.isIncome && (
                           <>
-                            <tr>
+                            <tr key={"a" + i}>
                               <td>{value.section.sectionName}</td>
                               <td className="subsection_data">
                                 {value.section.subSection}
@@ -231,7 +231,7 @@ export default function AllTransactions() {
                       return (
                         !value.section.isIncome && (
                           <>
-                            <tr>
+                            <tr key={"a" + i}>
                               <td>{value.section.sectionName}</td>
                               <td className="subsection_data">
                                 {value.section.subSection}

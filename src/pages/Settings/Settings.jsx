@@ -15,15 +15,13 @@ export default function Settings() {
   const [showStart, setShowStart] = useState(false);
   async function sendMonth() {
     try {
-      const res = await axios.get(`http://localhost:5000/users/${month}`, 
-      {  
+      const res = await axios.get(`http://localhost:5000/users/${month}`, {
         headers: {
           Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("user")).accessToken
           }`,
         },
-      }
-      );
+      });
       Success("Completed");
       return res;
     } catch (err) {
@@ -52,9 +50,9 @@ export default function Settings() {
             />
             <Dropdown
               tittle={"Start From"}
-              companyData={months}
+              companyData={["January", "September"]}
               getIndex={(e) => {
-                setMonth(e);
+                setMonth(e === 1 ? 8 : 0);
               }}
               defaultValue={"Starts from"}
             />

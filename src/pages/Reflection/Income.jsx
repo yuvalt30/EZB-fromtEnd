@@ -3,6 +3,10 @@ import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
+import { useQuery } from "react-query";
+import { ERROR } from "../../utils/toasts";
+import axios from "axios";
+import _ from "lodash";
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
 export default function Income({ setShow, data, monthIndex }) {
@@ -14,6 +18,7 @@ export default function Income({ setShow, data, monthIndex }) {
   const [monthPPercent, setMonthPPercent] = useState([]);
   const dispatch = useDispatch();
   const startMonth = useSelector((state) => state.user.startMonth);
+  const [indexMonth, setIndexMonth] = useState(monthIndex === 0 ? 0 : 9);
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
@@ -45,15 +50,18 @@ export default function Income({ setShow, data, monthIndex }) {
       String(monthAVGSum).includes(".") ? monthAVGSum.toFixed(2) : monthAVGSum
     );
     setPerformanceTotal(percentageSum);
-    setMonthArr(
-      monthNo
-        .slice(JSON.parse(localStorage.getItem("user")).startMonth)
-        .concat(monthNo.slice(0, monthIndex + 1))
-    );
+    const sliceMonth = monthNo
+      .slice(startMonth)
+      .concat(monthNo.slice(0, monthNo.length));
+
+    setMonthArr(sliceMonth.slice(0, sliceMonth.indexOf(monthIndex + 2)));
+    console.log(monthIndex);
     setMonthPPercent(
       monthPercentage
-        .slice(JSON.parse(localStorage.getItem("user")).startMonth)
-        .concat(monthPercentage.slice(0, monthIndex + 1))
+        .slice(0, indexMonth)
+        .concat(
+          monthPercentage.slice(indexMonth, indexMonth + monthPercentage.length)
+        )
     );
   }, [monthIndex, monthTotal]);
 
@@ -72,10 +80,14 @@ export default function Income({ setShow, data, monthIndex }) {
     });
     dispatch(budgetActions.incomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
-    setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
-  }, []);
+    const monthSumArr = monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b));
+    setMonthSum(
+      monthSumArr
+        .slice(0, indexMonth)
+        .concat(monthSumArr.slice(indexMonth, indexMonth + monthSumArr.length))
+    );
+  }, [monthIndex]);
 
-  const id = useId();
   return (
     <>
       <div className="table">
@@ -93,8 +105,11 @@ export default function Income({ setShow, data, monthIndex }) {
                   Execution in reality
                 </td>
                 {monthPPercent.map((value, i) => {
-                  return <td>{value}%</td>;
+                  return i < monthArr.length && <td>{value}%</td>;
                 })}
+                <td className="predict" rowSpan={2}>
+                  Predict
+                </td>
               </tr>
 
               <tr>
@@ -107,7 +122,7 @@ export default function Income({ setShow, data, monthIndex }) {
                 <td className="execution">Month avg</td>
                 {monthArr.map((value, i) => {
                   return (
-                    <td key={value} className="monthly_budget">
+                    <td key={"a" + i} className="monthly_budget">
                       {value}
                     </td>
                   );
@@ -129,9 +144,10 @@ export default function Income({ setShow, data, monthIndex }) {
                     setShow={setShow}
                     performance={sum}
                     i={i}
-                    key={"a" + i * 2}
+                    key={"a" + i}
                     monthIndex={monthIndex}
                     monthArr={monthArr}
+                    indexMonth={indexMonth}
                   />
                 );
               })}
@@ -145,8 +161,8 @@ export default function Income({ setShow, data, monthIndex }) {
                 <td className="execution">{monthAVG}</td>
                 {monthSum.map((value, i) => {
                   return (
-                    i <= monthArr.length && (
-                      <td key={id + Math.random()} className="monthly_budget">
+                    i < monthArr.length && (
+                      <td key={"l" + i} className="monthly_budget">
                         {value}
                       </td>
                     )
@@ -168,17 +184,44 @@ export function Row({
   monthIndex,
   performance,
   monthArr,
+  indexMonth,
 }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
-
+  const [incomeArr, setIncomeArr] = useState(value.income);
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
     value.incomeBudget !== 0 &&
       setPercentage((performance / (value.incomeBudget * 12)) * 100);
   }, [monthIndex]);
 
+  async function getReflection() {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/tracks/predict?name=${value.section}`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).accessToken
+            }`,
+          },
+        }
+      );
+      return res;
+    } catch (err) {
+      ERROR(err.response.data);
+    }
+  }
+
+  const {
+    data,
+    isFetching: isLoading,
+    refetch,
+  } = useQuery("predict" + value.section, getReflection, {
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
   return (
     <tr>
       <td
@@ -213,12 +256,11 @@ export function Row({
       </td>
       <td className="execution">{performance}</td>
       <td className="execution">{Math.round(monthAVG)}</td>
-
       {value.income.map((month, i, arr) => {
         return (
           i < monthArr.length && (
             <td
-              key={month + Math.random()}
+              key={"g" + i}
               className={`monthly_budget ${
                 month < value.incomeBudget ? "alert" : ""
               }`}
@@ -228,6 +270,12 @@ export function Row({
           )
         );
       })}
+      <td>
+        {!data?.data?.prediction && (
+          <button onClick={refetch}>{isLoading ? "Loading" : "Predict"}</button>
+        )}
+        {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
+      </td>
     </tr>
   );
 }

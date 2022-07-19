@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [amount, setAmount] = useState();
   const [description, setDescription] = useState();
   const { user } = useContext(Data);
+  const [type, setType] = useState();
   const [errors, setErrors] = useState({});
 
   async function sendSections() {
@@ -176,27 +177,42 @@ export default function Dashboard() {
         </div>
         <hr className="divider" />
         <div className="csv_container">
-          <div className="upload_file">
-            <input type="file" onChange={handleCsv} />
-            <Icon icon="ic:twotone-cloud-upload" />
-            <p>Upload your CSV Here</p>
-          </div>
-          {csvFile.name ? (
+          <Dropdown
+            tittle={"Select type"}
+            companyData={["Income", "Outcome"]}
+            onChange={(e) => {
+              setType(e);
+            }}
+            style={{
+              minWidth: 300,
+            }}
+            defaultValue={"Select type"}
+          />
+          {type && (
             <>
-              <div className="file_info">
-                <Icon icon="fa6-solid:file-csv" />
-                <div className="file_content">
-                  <div>
-                    <h2>{csvFile.name}</h2>
-                  </div>
-                  <Icon icon="flat-color-icons:ok" />
-                </div>
+              <div className="upload_file">
+                <input type="file" onChange={handleCsv} />
+                <Icon icon="ic:twotone-cloud-upload" />
+                <p>Upload your CSV Here</p>
               </div>
-              <button onClick={sendCsvFile}>Submit</button>
+              {csvFile.name ? (
+                <>
+                  <div className="file_info">
+                    <Icon icon="fa6-solid:file-csv" />
+                    <div className="file_content">
+                      <div>
+                        <h2>{csvFile.name}</h2>
+                      </div>
+                      <Icon icon="flat-color-icons:ok" />
+                    </div>
+                  </div>
+                  <button onClick={sendCsvFile}>Submit</button>
+                </>
+              ) : csvFile.err ? (
+                <div className="file_error">{csvFile.err}</div>
+              ) : null}
             </>
-          ) : csvFile.err ? (
-            <div className="file_error">{csvFile.err}</div>
-          ) : null}
+          )}
         </div>
       </div>
       <ol className="instruction">

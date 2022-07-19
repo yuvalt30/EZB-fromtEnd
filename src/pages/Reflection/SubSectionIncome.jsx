@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
+import { Pie } from "react-chartjs-2";
 
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
@@ -11,24 +12,30 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
   const [monthSum, setMonthSum] = useState([]);
   const [monthTotal, setMonthTotal] = useState(0);
   const [performanceTotal, setPerformanceTotal] = useState(0);
-  const [charts, setCharts] = useState([]);
+  const [chartsI, setChartsI] = useState([]);
   const dispatch = useDispatch();
+  const [showChartsI, setShowChartsI] = useState(false);
+  const [secName, setSecName] = useState([]);
   const { selectedSec } = useSelector((state) => {
     return {
       selectedSec: state.lineData.name,
     };
   });
-  useEffect(() => {
-    dispatch(budgetActions.incomeChart(charts));
-  }, [charts]);
 
   useEffect(() => {
     let percentageSum = 0;
+    const percentChart = [];
     data.income.forEach((value) => {
       for (let i = 0; i <= monthIndex; i++) {
         percentageSum += value.income[i];
       }
+      percentChart.push(
+        monthTotal !== 0 && value.incomeBudget
+          ? (value.incomeBudget / monthTotal) * 100
+          : 0
+      );
     });
+    setChartsI(percentChart);
     const monthAVGSum = percentageSum / (monthIndex + 1);
     const varMonth = String(monthAVGSum).includes(".")
       ? monthAVGSum.toFixed(2)
@@ -43,24 +50,84 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
         },
       })
     );
-  }, [monthIndex]);
+  }, [monthIndex, monthTotal]);
 
   useEffect(() => {
     const monthBudget = [];
     let monthSumTotal = 0;
+    const secNameArr = [];
     data.income.forEach((value, i) => {
       monthBudget.push(value.income);
+      secNameArr.push(value.section);
       monthSumTotal += value.incomeBudget;
     });
+    setSecName(secNameArr);
     setMonthTotal(monthSumTotal);
     setMonthSum(monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b)));
   }, []);
 
   const id = useId();
+  const dataOutcome = {
+    labels: secName,
+    datasets: [
+      {
+        label: "# of Votes",
+        data: chartsI,
+
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+          "rgba(172, 255, 64, 0.2)",
+          "rgba(64, 195, 255, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "#66fff2",
+          "#ef40ff",
+          "#9940ff",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
   return (
     <>
       <div className="table">
-        <h2>Income of {selectedSec}</h2>
+        <div className="sub-section-title">
+          <h2>Income of {selectedSec}</h2>
+          <button
+            onClick={() => {
+              setShowChartsI(true);
+            }}
+          >
+            Chart
+          </button>
+        </div>
+        {showChartsI && (
+          <div className="charts">
+            <div>
+              <div>
+                <h2>Income</h2>
+                <Pie data={dataOutcome} />
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowChartsI(false);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        )}
         <div className="fixTableHead">
           <table align="center" border={1} cellSpacing={0} cellPadding={5}>
             <thead>
@@ -113,7 +180,6 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
                     i={i}
                     key={"a" + i * 2}
                     monthIndex={monthIndex}
-                    chartData={setCharts}
                   />
                 );
               })}
@@ -143,26 +209,14 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
   );
 }
 
-export function Row({
-  setShow,
-  value,
-  total,
-  monthIndex,
-  performance,
-  chartData,
-}) {
+export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
-    chartData((p) => [
-      ...p,
-      performance !== 0 && value.incomeBudget
-        ? ((value.incomeBudget / performance) * 100).toFixed(2)
-        : 0,
-    ]);
+
     value.incomeBudget !== 0 &&
       setPercentage((performance / (value.incomeBudget * 12)) * 100);
   }, [monthIndex]);

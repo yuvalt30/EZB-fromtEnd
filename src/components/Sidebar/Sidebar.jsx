@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.scss";
 export default function Sidebar({ user }) {
   const navigate = useNavigate();
+
   const logOut = useCallback(() => {
     localStorage.setItem("user", null);
     navigate("/sign-in");
@@ -12,10 +13,12 @@ export default function Sidebar({ user }) {
   return (
     <div className="navigation">
       <ul>
-        <li>
-          <NavLink to="/dashboard">
-            <span className="title">Brand Name</span>
-          </NavLink>
+        <li className="header-nav">
+          <span className="title">Welcome,</span>
+          <h3>{user.name}</h3>
+          <span>
+            Role: <b>{user.role}</b>
+          </span>
         </li>
         {(user?.role === "ceo" || user?.role === "admin") && (
           <>
