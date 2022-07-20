@@ -24,9 +24,9 @@ export default function Budget() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         let text = e.target.result;
-        let stripped = text.split("\'").join('').split("-").join('').strip('\t').join('') // strip
+        let stripped = text.split("\'").join('').split('"').join('') // strip
         stripped.split('\r\n').forEach(line => {
-          let words = line.split(',')
+          let words = line.split('\t')
           if(words[0] && words[2])
           {
             const obj = {
@@ -49,7 +49,7 @@ export default function Budget() {
       const response = await axios.post(
         "http://localhost:5000/transactions/file",
         { 
-          transactions: csvData,
+          budget: csvData,
           isIncome: true // get this value from a dropdown
         },
         {
