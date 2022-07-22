@@ -194,7 +194,7 @@ export default function SubSectionOutcome({ setShow, data, monthIndex }) {
                 {monthSum.map((value, i) => {
                   return (
                     i <= monthIndex && (
-                      <td key={id + Math.random()} className="monthly_budget">
+                      <td key={id} className="monthly_budget">
                         {value}
                       </td>
                     )
@@ -261,7 +261,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
         return (
           i <= monthIndex && (
             <td
-              key={month + Math.random()}
+              key={month}
               className={`monthly_budget ${
                 month > value.outcomeBudget ? "alert" : ""
               }`}

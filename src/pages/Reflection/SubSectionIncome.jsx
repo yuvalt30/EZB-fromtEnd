@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { budgetActions } from "../../store";
 import { monthNo } from "./Reflection";
 import { Pie } from "react-chartjs-2";
+import { ERROR } from "../../utils/toasts";
+import axios from "axios";
+import { useQuery } from "react-query";
 
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
@@ -142,6 +145,7 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
                 {monthPercentage.map((value, i) => {
                   return i <= monthIndex && <td>{value}%</td>;
                 })}
+                <td rowSpan={2}>Predict</td>
               </tr>
 
               <tr>
@@ -194,7 +198,7 @@ export default function SubSectionIncome({ setShow, data, monthIndex }) {
                 {monthSum.map((value, i) => {
                   return (
                     i <= monthIndex && (
-                      <td key={id + Math.random()} className="monthly_budget">
+                      <td key={value + i} className="monthly_budget">
                         {value}
                       </td>
                     )
@@ -213,7 +217,32 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
+  async function getReflection() {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/tracks/predict?name=${value.section}`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).accessToken
+            }`,
+          },
+        }
+      );
+      return res;
+    } catch (err) {
+      ERROR(err.response.data);
+    }
+  }
 
+  const {
+    data,
+    isFetching: isLoading,
+    refetch,
+  } = useQuery("predict" + value.section, getReflection, {
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
 
@@ -261,7 +290,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
         return (
           i <= monthIndex && (
             <td
-              key={month + Math.random()}
+              key={month}
               className={`monthly_budget ${
                 month > value.incomeBudget ? "alert" : ""
               }`}
@@ -271,6 +300,12 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
           )
         );
       })}
+      <td>
+        {!data?.data?.prediction && (
+          <button onClick={refetch}>{isLoading ? "Loading" : "Show"}</button>
+        )}
+        {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
+      </td>
     </tr>
   );
 }

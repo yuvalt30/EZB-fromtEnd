@@ -272,7 +272,7 @@ export function Row({
       })}
       <td>
         {!data?.data?.prediction && (
-          <button onClick={refetch}>{isLoading ? "Loading" : "Predict"}</button>
+          <button onClick={refetch}>{isLoading ? "Loading" : "Show"}</button>
         )}
         {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
       </td>
