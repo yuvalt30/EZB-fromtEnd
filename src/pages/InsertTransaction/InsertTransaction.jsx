@@ -80,6 +80,8 @@ export default function InsertTransaction() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         let text = e.target.result;
+        text = text.split('\"').join('').split(',,').join('') //.split('-').join('0')
+        console.log(text)
         text = text.split("\r\n");
         text.forEach((value) => {
           const data = value.split(",");
