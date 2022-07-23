@@ -193,7 +193,7 @@ export function Row({
       const res = await axios.get(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
         {
-          data: value,
+          data: value.income,
         },
         {
           headers: {
