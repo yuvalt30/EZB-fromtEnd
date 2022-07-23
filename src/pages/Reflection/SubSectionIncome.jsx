@@ -239,7 +239,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
     data,
     isFetching: isLoading,
     refetch,
-  } = useQuery("predict" + value.section, getReflection, {
+  } = useQuery("predict" + value.section + "subI", getReflection, {
     refetchOnWindowFocus: false,
     enabled: false,
   });

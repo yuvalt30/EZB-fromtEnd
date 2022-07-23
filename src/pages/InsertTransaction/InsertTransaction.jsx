@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 import React, { useEffect, useState, useContext } from "react";
-import "./Dashboard.scss";
+import "./InsertTransaction.scss";
 import Input from "../../components/Input/Input";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import { Data } from "../../App";
@@ -10,7 +10,7 @@ import SubsectionDropdown from "../../components/Dropdown/SubsectionDropdown";
 import Preloader from "../../components/Preloader/Preloader";
 import { ERROR, Success, Warn } from "../../utils/toasts";
 
-export default function Dashboard() {
+export default function InsertTransaction() {
   const [csvFile, setCsvFile] = useState({});
   const [csvData, setCsvData] = useState([]);
   const [sections, setSections] = useState();
@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [amount, setAmount] = useState();
   const [description, setDescription] = useState();
   const { user } = useContext(Data);
-  const [type, setType] = useState();
+  const [type, setType] = useState("Income");
   const [errors, setErrors] = useState({});
 
   async function sendSections() {
@@ -105,7 +105,7 @@ export default function Dashboard() {
         "http://localhost:5000/transactions/file",
         {
           transactions: csvData,
-          isIncome: true  // get this value from a dropdown
+          isIncome: type === "Income" ? true : false,
         },
         {
           headers: {
@@ -189,7 +189,7 @@ export default function Dashboard() {
             style={{
               minWidth: 300,
             }}
-            defaultValue={"Select type"}
+            defaultValue={"Income"}
           />
           {type && (
             <>
@@ -219,19 +219,20 @@ export default function Dashboard() {
         </div>
       </div>
       <ol className="instruction">
-      <li>
-          Insert new transaction to a section from the list of permitted section.
-          Enter not negative number as amount.
-          Optionally add a description and/or a date. (default date is today)
+        <li>
+          Insert new transaction to a section from the list of permitted
+          section. Enter not negative number as amount. Optionally add a
+          description and/or a date. (default date is today)
         </li>
-      
-          <li>
-          Another Option Is To Upload A CSV File With budget sections to create, Where Each Line In File Is A new section.
-          </li>
-          <li>
-          Line's Format: description, amount, date, sectionName, subSection.<br/>
-          </li>
-        
+
+        <li>
+          Another Option Is To Upload A CSV File With budget sections to create,
+          Where Each Line In File Is A new section.
+        </li>
+        <li>
+          Line's Format: description, amount, date, sectionName, subSection.
+          <br />
+        </li>
       </ol>
     </div>
   );

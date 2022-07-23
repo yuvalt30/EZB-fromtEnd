@@ -1,6 +1,6 @@
 import "./App.scss";
 import Login from "./pages/Login/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
+import InsertTransaction from "./pages/InsertTransaction/InsertTransaction";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Reflection from "./pages/Reflection/Reflection";
@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import { createContext } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PlanABudget from "./pages/PlanABudget/PlanABudget";
 import Budget from "./pages/Budget/Budget";
-import PlanBudget from "./pages/PlanBudget/PlanBudget";
 import { useSelector } from "react-redux";
 import Settings from "./pages/Settings/Settings";
 import axios from "axios";
@@ -80,7 +80,7 @@ function App() {
           )}
 
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<InsertTransaction />} />
             <Route path="/sign-in" element={<Login />} />
 
             {(user?.role === "admin" ||
@@ -88,10 +88,10 @@ function App() {
               userRedux?.role === "admin" ||
               userRedux?.role === "ceo") && (
               <>
-                <Route path="/budget" element={<Budget />} />
+                <Route path="/budget" element={<PlanABudget />} />
                 <Route path="/reflection" element={<Reflection />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/plan-budget" element={<PlanBudget />} />
+                <Route path="/plan-budget" element={<Budget />} />
                 <Route path="/all-transactions" element={<AllTransactions />} />
               </>
             )}

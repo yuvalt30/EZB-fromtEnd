@@ -1,148 +1,164 @@
 import { Icon } from "@iconify/react";
 import axios from "axios";
-import { isEmpty } from "lodash";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { Data } from "../../App";
 import Dropdown from "../../components/Dropdown/Dropdown";
-import SubsectionDropdown from "../../components/Dropdown/SubsectionDropdown";
 import Input from "../../components/Input/Input";
 import Preloader from "../../components/Preloader/Preloader";
 import { ERROR, Success, Warn } from "../../utils/toasts";
-import "./Budget.scss";
 
 export default function Budget() {
-  const [sections, setSections] = useState();
-  const { sectionsArr, data, user } = useContext(Data);
-  const [subSections, setSubSections] = useState();
-  const [amount, setAmount] = useState(0);
   const [csvFile, setCsvFile] = useState({});
   const [csvData, setCsvData] = useState([]);
-  const [type, setType] = useState();
+  const [valueInput, setValueInput] = useState({
+    sectionName: "",
+    incomeName: "",
+    outcomeName: "",
+  });
+  const [type, setType] = useState("Income");
 
-  async function handleCsv(e) {
-    // change to be for a format of [ subSection, sectionName, isIncome ]
+  function handleCsv(e) {
     if (e.target.files[0].type === "text/csv") {
       setCsvFile(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = async (e) => {
-        let text = e.target.result;
-        let stripped = text.split("'").join("").split('"').join(""); // strip
-        stripped.split("\r\n").forEach((line) => {
-          let words = line.split("\t");
-          if (words[0] && words[2]) {
-            const obj = {
+        let str = e.target.result;
+        let result = {
+          sections: [],
+          outcomes: [],
+          isIncome: type === "Income" ? true : false,
+        };
+        let stripped = str.split('"').join(""); // strip
+        // stripped = stripped.split("&"); // divide income & outcome
+        // sections
+        stripped[0].split("\r\n").forEach((line) => {
+          let words = line.split(",").map((value) => {
+            return value.trim();
+          });
+          if (words[0])
+            result.sections.push({
               sectionName: words[0],
-              subSections: words[1],
-              amount: words[2],
-              year: words[3],
-            };
-            setCsvData((prev) => [...prev, obj]);
-          }
+              subSections: words.slice(1, words.length),
+            });
         });
+        //outcomes
+        // stripped[1].split("\r\n").forEach((line) => {
+        //   let words = line.split(",").map((value) => {
+        //     return value.trim();
+        //   });
+        //   if (words[0])
+        //     result.outcomes.push({
+        //       sectionName: words[0],
+        //       subSections: words.slice(1, words.length),
+        //     });
+        // });
+        setCsvData(result);
       };
       reader.readAsText(e.target.files[0]);
     } else {
       setCsvFile({ err: "Not a csv file" });
     }
   }
-  async function sendCsv() {
+
+  async function sendCSV() {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/transactions/file",
-        {
-          budget: csvData,
-          isIncome: true, // get this value from a dropdown
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
-      );
-      setCsvFile({});
+      const res = await axios.post("http://localhost:5000/sections", csvData);
       Success("Completed");
-      return response;
+      setCsvFile({});
+      return res;
     } catch (err) {
       ERROR(err.response.data);
     }
   }
-  const { isLoading: csvSending, refetch: sendCsvFile } = useQuery(
-    "send-csv",
-    sendCsv,
+
+  async function sendBudget() {
+    let splitIncome = valueInput.incomeName
+      .split('"')
+      .join("")
+      .split(",")
+      .map((value) => {
+        return value.trim();
+      });
+    let splitOutcome = valueInput.outcomeName
+      .split('"')
+      .join("")
+      .split(",")
+      .map((value) => {
+        return value.trim();
+      });
+    try {
+      const res = await axios.post("http://localhost:5000/sections", {
+        incomes: [
+          { sectionName: valueInput.sectionName, subSections: splitIncome },
+        ],
+        outcomes: [
+          { sectionName: valueInput.sectionName, subSections: splitOutcome },
+        ],
+      });
+      Success("Completed");
+      return res;
+    } catch (err) {
+      ERROR(err.response.data);
+    }
+  }
+  const { isLoading: fetchingBudgetCsv, refetch: sendCsvFetch } = useQuery(
+    "send-budget",
+    sendBudget,
     {
       refetchOnWindowFocus: false,
       enabled: false,
     }
   );
-  async function sendData() {
-    if (!isEmpty(subSections) && sections && amount) {
-      if (amount >= 0) {
-        try {
-          const response = await axios.put(
-            `http://localhost:5000/sections/${subSections.id}-${amount}`,
-            {
-              headers: {
-                Authorization: `Bearer ${user.accessToken}`,
-              },
-            }
-          );
-          Success("Completed");
-          return response;
-        } catch (err) {
-          ERROR(err.response.data);
-        }
-      } else {
-        Warn("Enter valid amount");
-      }
-    } else {
-      Warn("Fill all the data");
-    }
-  }
-  const { refetch, isLoading } = useQuery("register", sendData, {
-    enabled: false,
+  const { isLoading, refetch } = useQuery("send-plan-budget-csv", sendCSV, {
     refetchOnWindowFocus: false,
+    enabled: false,
   });
-  if (isLoading) {
-    return <Preloader />;
-  }
-  if (csvSending) {
+  if (isLoading || fetchingBudgetCsv) {
     return <Preloader />;
   }
   return (
     <div className="container plan_budget">
       <div className="form">
         <div>
-          <Dropdown
-            tittle={"Select section"}
-            companyData={sectionsArr}
+          <Input
             onChange={(e) => {
-              setSections(e);
+              setValueInput({ ...valueInput, sectionName: e.target.value });
             }}
-          />
-          {sections !== undefined && (
-            <SubsectionDropdown
-              tittle={"Select sub section"}
-              onChange={(e) => {
-                setSubSections(e);
-              }}
-              companyData={data.data.filter((value) => {
-                return sections === value._id;
-              })}
-            />
-          )}
-          {subSections && (
-            <Input
-              onChange={(e) => {
-                setAmount(e.target.value);
-              }}
-            >
-              Monthly budget for {sections} of {subSections.name}
-            </Input>
-          )}
+          >
+            Section
+          </Input>
+          <Input
+            onChange={(e) => {
+              setValueInput({ ...valueInput, incomeName: e.target.value });
+            }}
+          >
+            Income Sub Section
+          </Input>
+
+          <Input
+            onChange={(e) => {
+              setValueInput({ ...valueInput, outcomeName: e.target.value });
+            }}
+          >
+            Outcome Sub Section
+          </Input>
           <button
             onClick={() => {
-              refetch();
+              if (
+                !valueInput.sectionName &&
+                !valueInput.incomeName &&
+                !valueInput.outcomeName
+              ) {
+                Warn("Fill all the data");
+              } else if (!valueInput.incomeName && !valueInput.outcomeName) {
+                Warn("Provide at least one for income or outcome");
+              }
+              if (
+                (valueInput.incomeName || valueInput.outcomeName) &&
+                valueInput.sectionName
+              ) {
+                sendCsvFetch();
+              }
             }}
           >
             Submit
@@ -151,9 +167,8 @@ export default function Budget() {
         <hr className="divider" />
         <ol className="instruction">
           <li>
-            Insert new budget to a sub section from the list of permitted
-            section. Enter not negative number as amount. Optionally add a
-            description and/or a date. (default date is today)
+            create a new section by inserting its name and its income and
+            outcome sub sections, seperated by comma. [subIn1,subIn2]
           </li>
           <li>
             another option is to upload a CSV file with transactions, where each
@@ -168,44 +183,51 @@ export default function Budget() {
           </li>
         </ol>
       </div>
-
       <div>
-        <Dropdown
-          tittle={"Select type"}
-          companyData={["Income", "Outcome"]}
-          onChange={(e) => {
-            setType(e);
-          }}
-          style={{
-            minWidth: 300,
-          }}
-          defaultValue={"Select type"}
-        />
-        {type && (
-          <div className="csv_container">
-            <div className="upload_file">
-              <input type="file" onChange={handleCsv} />
-              <Icon icon="ic:twotone-cloud-upload" />
-              <p>Upload your CSV Here</p>
-            </div>
-            {csvFile.name ? (
-              <>
-                <div className="file_info">
-                  <Icon icon="fa6-solid:file-csv" />
-                  <div className="file_content">
-                    <div>
-                      <h2>{csvFile.name}</h2>
+        <div className="csv_container">
+          <Dropdown
+            tittle={"Select type"}
+            companyData={["Income", "Outcome"]}
+            onChange={(e) => {
+              setType(e);
+            }}
+            style={{
+              minWidth: 300,
+            }}
+            defaultValue={"Income"}
+          />
+          {type && (
+            <>
+              <div className="upload_file">
+                <input type="file" onChange={handleCsv} />
+                <Icon icon="ic:twotone-cloud-upload" />
+                <p>Upload your CSV Here</p>
+              </div>
+              {csvFile.name ? (
+                <>
+                  <div className="file_info">
+                    <Icon icon="fa6-solid:file-csv" />
+                    <div className="file_content">
+                      <div>
+                        <h2>{csvFile.name}</h2>
+                      </div>
+                      <Icon icon="flat-color-icons:ok" />
                     </div>
-                    <Icon icon="flat-color-icons:ok" />
                   </div>
-                </div>
-                <button onClick={sendCsvFile}>Submit</button>
-              </>
-            ) : csvFile.err ? (
-              <div className="file_error">{csvFile.err}</div>
-            ) : null}
-          </div>
-        )}
+                  <button
+                    onClick={() => {
+                      refetch();
+                    }}
+                  >
+                    Submit
+                  </button>
+                </>
+              ) : csvFile.err ? (
+                <div className="file_error">{csvFile.err}</div>
+              ) : null}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
