@@ -191,8 +191,11 @@ export function Row({
 
   async function getReflection() {
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
+        {
+          data: value,
+        },
         {
           headers: {
             Authorization: `Bearer ${
@@ -265,7 +268,13 @@ export function Row({
       })}
       <td>
         {!data?.data?.prediction && (
-          <button onClick={refetch}>{isLoading ? "Loading" : "Show"}</button>
+          <button onClick={refetch}>
+            {isLoading ? (
+              <Icon icon="line-md:loading-twotone-loop" />
+            ) : (
+              <Icon icon="bx:show" />
+            )}
+          </button>
         )}
         {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
       </td>

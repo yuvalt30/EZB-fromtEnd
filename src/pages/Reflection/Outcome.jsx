@@ -193,6 +193,9 @@ export function Row({
       const res = await axios.get(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
         {
+          data: value,
+        },
+        {
           headers: {
             Authorization: `Bearer ${
               JSON.parse(localStorage.getItem("user")).accessToken
@@ -264,7 +267,9 @@ export function Row({
       })}
       <td>
         {!data?.data?.prediction && (
-          <button onClick={refetch}>{isLoading ? "Loading" : "Show"}</button>
+          <button onClick={refetch}>
+            {isLoading ? "Loading" : <Icon icon="bx:show" />}
+          </button>
         )}
         {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
       </td>
