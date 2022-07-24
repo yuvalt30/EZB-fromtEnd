@@ -15,9 +15,9 @@ export default function Sidebar({ user }) {
       <ul>
         <li className="header-nav">
           <span className="title">Welcome,</span>
-          <h3>{user.name}</h3>
+          <h3>{user?.name}</h3>
           <span>
-            Role: <b>{user.role}</b>
+            Role: <b>{user?.role}</b>
           </span>
         </li>
         {(user?.role === "ceo" || user?.role === "admin") && (

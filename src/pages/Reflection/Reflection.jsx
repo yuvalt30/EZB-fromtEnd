@@ -54,9 +54,6 @@ export default function Reflection() {
       income: state.income,
     };
   });
-  const incomeColor = income.chart.map((value) => {
-    return getNewColor();
-  });
 
   const dataIncome = {
     labels: income.name,
@@ -70,8 +67,26 @@ export default function Reflection() {
             display: false,
           },
         },
-        backgroundColor: incomeColor,
-        borderColor: ["#fff"],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+          "rgba(172, 255, 64, 0.2)",
+          "rgba(64, 195, 255, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "#66fff2",
+          "#ef40ff",
+          "#9940ff",
+        ],
         borderWidth: 1,
       },
     ],
@@ -146,6 +161,8 @@ export default function Reflection() {
           "rgba(75, 192, 192, 0.2)",
           "rgba(153, 102, 255, 0.2)",
           "rgba(255, 159, 64, 0.2)",
+          "rgba(172, 255, 64, 0.2)",
+          "rgba(64, 195, 255, 0.2)",
         ],
         borderColor: [
           "rgba(255, 99, 132, 1)",
@@ -153,7 +170,9 @@ export default function Reflection() {
           "rgba(255, 206, 86, 1)",
           "rgba(75, 192, 192, 1)",
           "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
+          "#66fff2",
+          "#ef40ff",
+          "#9940ff",
         ],
         borderWidth: 1,
       },

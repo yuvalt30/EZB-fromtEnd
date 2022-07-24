@@ -6,7 +6,7 @@ import { monthNo } from "./Reflection";
 import { useQuery } from "react-query";
 import { ERROR } from "../../utils/toasts";
 import axios from "axios";
-import _ from "lodash";
+import _, { indexOf } from "lodash";
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
 export default function Income({ setShow, data, monthIndex }) {
@@ -17,8 +17,8 @@ export default function Income({ setShow, data, monthIndex }) {
   const [monthArr, setMonthArr] = useState([]);
   const [monthPPercent, setMonthPPercent] = useState([]);
   const dispatch = useDispatch();
-  const startMonth = useSelector((state) => state.user.startMonth);
-  const [indexMonth, setIndexMonth] = useState(monthIndex === 0 ? 0 : 9);
+  const startMonth = useSelector((state) => state.user.startMonth + 1);
+
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
@@ -52,16 +52,13 @@ export default function Income({ setShow, data, monthIndex }) {
     setPerformanceTotal(percentageSum);
     const sliceMonth = monthNo
       .slice(startMonth)
-      .concat(monthNo.slice(0, monthNo.length));
-
-    setMonthArr(sliceMonth.slice(0, sliceMonth.indexOf(monthIndex + 2)));
-    console.log(monthIndex);
+      .concat(monthNo.slice(0, startMonth));
+    setMonthArr(sliceMonth.slice(0, sliceMonth.indexOf(monthIndex + 1)));
+    console.log(sliceMonth.slice(0, sliceMonth.indexOf(monthIndex + 1)));
     setMonthPPercent(
       monthPercentage
-        .slice(0, indexMonth)
-        .concat(
-          monthPercentage.slice(indexMonth, indexMonth + monthPercentage.length)
-        )
+        .slice(startMonth)
+        .concat(monthPercentage.slice(0, startMonth))
     );
   }, [monthIndex, monthTotal]);
 
@@ -81,11 +78,7 @@ export default function Income({ setShow, data, monthIndex }) {
     dispatch(budgetActions.incomeChart({ name: sectionName }));
     setMonthTotal(monthSumTotal);
     const monthSumArr = monthBudget.reduce((r, a) => r.map((b, i) => a[i] + b));
-    setMonthSum(
-      monthSumArr
-        .slice(0, indexMonth)
-        .concat(monthSumArr.slice(indexMonth, indexMonth + monthSumArr.length))
-    );
+    setMonthSum(monthSumArr);
   }, [monthIndex]);
 
   return (
@@ -107,6 +100,7 @@ export default function Income({ setShow, data, monthIndex }) {
                 {monthPPercent.map((value, i) => {
                   return i < monthArr.length && <td>{value}%</td>;
                 })}
+                <td>{monthPercentage[monthIndex]}%</td>
                 <td className="predict" rowSpan={2}>
                   Predict
                 </td>
@@ -127,6 +121,7 @@ export default function Income({ setShow, data, monthIndex }) {
                     </td>
                   );
                 })}
+                <td className="monthly_budget">{monthIndex + 1}</td>
               </tr>
             </thead>
 
@@ -147,7 +142,6 @@ export default function Income({ setShow, data, monthIndex }) {
                     key={"a" + i}
                     monthIndex={monthIndex}
                     monthArr={monthArr}
-                    indexMonth={indexMonth}
                   />
                 );
               })}
@@ -161,7 +155,7 @@ export default function Income({ setShow, data, monthIndex }) {
                 <td className="execution">{monthAVG}</td>
                 {monthSum.map((value, i) => {
                   return (
-                    i < monthArr.length && (
+                    i < monthArr.length + 1 && (
                       <td key={"l" + i} className="monthly_budget">
                         {value}
                       </td>
@@ -184,7 +178,6 @@ export function Row({
   monthIndex,
   performance,
   monthArr,
-  indexMonth,
 }) {
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
@@ -258,7 +251,7 @@ export function Row({
       <td className="execution">{Math.round(monthAVG)}</td>
       {value.income.map((month, i, arr) => {
         return (
-          i < monthArr.length && (
+          i < monthArr.length + 1 && (
             <td
               key={"g" + i}
               className={`monthly_budget ${
@@ -272,7 +265,7 @@ export function Row({
       })}
       <td>
         {!data?.data?.prediction && (
-          <button onClick={refetch}>{isLoading ? "Loading" : "Predict"}</button>
+          <button onClick={refetch}>{isLoading ? "Loading" : "Show"}</button>
         )}
         {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}
       </td>

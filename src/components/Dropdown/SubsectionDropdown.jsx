@@ -82,7 +82,7 @@ export const SubsectionDropdown = ({
                 key={"g" + (i * 3) / 100}
                 s
                 onClick={() => {
-                  onChange(value._id);
+                  onChange({ id: value._id, name: value.subSection });
                   setDropDownName(value.subSection);
                   setColor(value.isIncome ? "#21c400" : "red");
                 }}
