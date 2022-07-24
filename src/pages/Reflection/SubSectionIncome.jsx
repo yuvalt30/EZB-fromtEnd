@@ -222,7 +222,7 @@ export function Row({ setShow, value, total, monthIndex, performance }) {
       const res = await axios.get(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
         {
-          data: value.income,
+          data: value.income.slice(0, monthIndex),
         },
         {
           headers: {

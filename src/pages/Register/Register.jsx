@@ -9,9 +9,7 @@ import Preloader from "../../components/Preloader/Preloader";
 import { ERROR, Success, Warn } from "../../utils/toasts";
 import "./Register.scss";
 import validator from "validator";
-import PermissionDropdown, {
-  RoleDropdown,
-} from "../../components/Dropdown/PermissionDropdown";
+import PermissionDropdown from "../../components/Dropdown/PermissionDropdown";
 export default function Register() {
   const [input, setInput] = useState({
     name: "",

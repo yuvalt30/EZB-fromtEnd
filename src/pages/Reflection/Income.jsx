@@ -6,7 +6,6 @@ import { monthNo } from "./Reflection";
 import { useQuery } from "react-query";
 import { ERROR } from "../../utils/toasts";
 import axios from "axios";
-import _, { indexOf } from "lodash";
 const monthPercentage = [8, 17, 25, 33, 42, 50, 58, 67, 75, 83, 92, 100];
 
 export default function Income({ setShow, data, monthIndex }) {
@@ -17,14 +16,14 @@ export default function Income({ setShow, data, monthIndex }) {
   const [monthArr, setMonthArr] = useState([]);
   const [monthPPercent, setMonthPPercent] = useState([]);
   const dispatch = useDispatch();
-  const startMonth = useSelector((state) => state.user.startMonth + 1);
+  const startMonth = useSelector((state) => state.user.startMonth);
 
   useEffect(() => {
     let percentageSum = 0;
     const percentArr = [];
     const performanceSumArr = [];
 
-    data.income.forEach((value) => {
+    data.income?.forEach((value) => {
       let performanceSum = 0;
       for (let i = 0; i <= monthIndex; i++) {
         performanceSum += value.income[i];
@@ -67,12 +66,12 @@ export default function Income({ setShow, data, monthIndex }) {
     let monthSumTotal = 0;
     const sectionName = [];
     const percentArr = [];
-    data.income.forEach((value, i) => {
+    data.income?.forEach((value, i) => {
       monthBudget.push(value.income);
       monthSumTotal += value.incomeBudget;
       sectionName.push(value.section);
     });
-    data.income.forEach((value, i) => {
+    data.income?.forEach((value, i) => {
       percentArr.push(((value.incomeBudget / monthTotal) * 100).toFixed(2));
     });
     dispatch(budgetActions.incomeChart({ name: sectionName }));
@@ -126,7 +125,7 @@ export default function Income({ setShow, data, monthIndex }) {
             </thead>
 
             <tbody>
-              {data.income.map((value, i) => {
+              {data.income?.map((value, i) => {
                 let sum = 0;
                 for (let i = 0; i <= monthIndex; i++) {
                   sum += value.income[i];
@@ -182,19 +181,18 @@ export function Row({
   const [percentage, setPercentage] = useState(0);
   const [monthAVG, setMonthAVG] = useState(0);
   const dispatch = useDispatch();
-  const [incomeArr, setIncomeArr] = useState(value.income);
   useEffect(() => {
     setMonthAVG(performance / (monthIndex + 1));
     value.incomeBudget !== 0 &&
       setPercentage((performance / (value.incomeBudget * 12)) * 100);
   }, [monthIndex]);
 
-  async function getReflection() {
+  async function predict() {
     try {
       const res = await axios.post(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
         {
-          data: value.income,
+          data: value.income.slice(0, monthIndex),
         },
         {
           headers: {
@@ -214,7 +212,7 @@ export function Row({
     data,
     isFetching: isLoading,
     refetch,
-  } = useQuery("predict" + value.section, getReflection, {
+  } = useQuery("predict" + value.section + "in", predict, {
     refetchOnWindowFocus: false,
     enabled: false,
   });

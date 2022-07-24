@@ -27,7 +27,6 @@ import SubSectionOutcome from "./SubSectionOutcome";
 import Outcome from "./Outcome";
 import Summery from "./Summery";
 import SubSummary from "./SubSummary";
-import { getNewColor } from "../../utils/colorGenarator";
 
 ChartJS.register(
   ArcElement,
@@ -346,15 +345,15 @@ export default function Reflection() {
         <div className="section_table">
           <Income
             monthIndex={monthIndex}
-            data={reflection.data}
+            data={reflection?.data || []}
             setShow={setShow}
           />
           <Outcome
             monthIndex={monthIndex}
-            data={reflection.data}
+            data={reflection?.data || []}
             setShow={setShow}
           />
-          <Summery data={reflection.data.summary} monthIndex={monthIndex} />
+          <Summery data={reflection?.data.summary} monthIndex={monthIndex} />
         </div>
 
         {show && (

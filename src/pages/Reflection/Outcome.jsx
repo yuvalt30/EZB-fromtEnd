@@ -16,7 +16,7 @@ export default function Outcome({ setShow, data, monthIndex }) {
   const [monthArr, setMonthArr] = useState([]);
   const [monthPPercent, setMonthPPercent] = useState([]);
   const dispatch = useDispatch();
-  const startMonth = useSelector((state) => state.user.startMonth + 1);
+  const startMonth = useSelector((state) => state.user.startMonth);
 
   useEffect(() => {
     let percentageSum = 0;
@@ -125,7 +125,7 @@ export default function Outcome({ setShow, data, monthIndex }) {
             </thead>
 
             <tbody>
-              {data.outcome.map((value, i) => {
+              {data.outcome?.map((value, i) => {
                 let sum = 0;
                 for (let i = 0; i <= monthIndex; i++) {
                   sum += value.outcome[i];
@@ -188,12 +188,12 @@ export function Row({
       setPercentage((performance / (value.outcomeBudget * 12)) * 100);
   }, [monthIndex]);
 
-  async function getReflection() {
+  async function predict() {
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         `http://localhost:5000/tracks/predict?name=${value.section}`,
         {
-          data: value.income,
+          data: value.outcome.slice(0, monthIndex),
         },
         {
           headers: {
@@ -213,7 +213,7 @@ export function Row({
     data,
     isFetching: isLoading,
     refetch,
-  } = useQuery("predict" + value.section, getReflection, {
+  } = useQuery("predict" + value.section + "out", predict, {
     refetchOnWindowFocus: false,
     enabled: false,
   });
@@ -268,7 +268,11 @@ export function Row({
       <td>
         {!data?.data?.prediction && (
           <button onClick={refetch}>
-            {isLoading ? "Loading" : <Icon icon="bx:show" />}
+            {isLoading ? (
+              <Icon icon="line-md:loading-twotone-loop" />
+            ) : (
+              <Icon icon="bx:show" />
+            )}
           </button>
         )}
         {data?.data?.name === value.section && <p>{data?.data?.prediction}</p>}

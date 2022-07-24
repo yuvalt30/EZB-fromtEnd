@@ -29,7 +29,7 @@ export default function Summery({ data, monthIndex }) {
             </tr>
           </thead>
           <tbody>
-            {data.map((value) => {
+            {data?.map((value) => {
               let outcome;
               let income;
               plannedOutcome.forEach((plan) => {

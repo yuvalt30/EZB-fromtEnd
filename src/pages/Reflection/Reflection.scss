@@ -120,6 +120,13 @@
       text-decoration: underline;
       cursor: pointer;
     }
+    button {
+      font-size: 20px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
   thead {
     tr:first-child {
