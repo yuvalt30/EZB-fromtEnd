@@ -27,7 +27,7 @@ export default function Budget() {
           sections: [],
           isIncome: type === "Income" ? true : false,
         };
-        let stripped = str.split('"').join(""); // strip
+        let stripped = str.split('"').join("").split('ה.').join('').split(',,').join(); // strip
         // stripped = stripped.split("&"); // divide income & outcome
         // sections
         stripped.split("\r\n").forEach((line) => {
