@@ -25,13 +25,12 @@ export default function Budget() {
         let str = e.target.result;
         let result = {
           sections: [],
-          outcomes: [],
           isIncome: type === "Income" ? true : false,
         };
-        let stripped = str.split('"').join(""); // strip
+        let stripped = str.split('"').join("").split('ה.').join('').split(',,').join(); // strip
         // stripped = stripped.split("&"); // divide income & outcome
         // sections
-        stripped[0].split("\r\n").forEach((line) => {
+        stripped.split("\r\n").forEach((line) => {
           let words = line.split(",").map((value) => {
             return value.trim();
           });
