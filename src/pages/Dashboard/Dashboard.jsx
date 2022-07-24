@@ -80,6 +80,8 @@ export default function Dashboard() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         let text = e.target.result;
+        text = text.split('\"').join('').split(',,').join('') //.split('-').join('0')
+        console.log(text)
         text = text.split("\r\n");
         text.forEach((value) => {
           const data = value.split(",");
@@ -105,7 +107,7 @@ export default function Dashboard() {
         "http://localhost:5000/transactions/file",
         {
           transactions: csvData,
-          isIncome: true  // get this value from a dropdown
+          isIncome: false  // get this value from a dropdown
         },
         {
           headers: {

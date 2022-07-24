@@ -24,13 +24,14 @@ export default function PlanBudget() {
         let str = e.target.result;
         let result = {
           sections: [],
-          outcomes: [],
-          isIncome: true, // get this value from a dropdown
+          // outcomes: [],
+          isIncome: false, // get this value from a dropdown
         };
-        let stripped = str.split('"').join(""); // strip
+        let stripped = str.split('"').join("").split(',,').join(''); // strip
         // stripped = stripped.split("&"); // divide income & outcome 
         // sections
-        stripped[0].split("\r\n").forEach((line) => {
+        stripped.split("\r\n").forEach((line) => {
+          console.log(line)
           let words = line.split(",").map((value) => {
             return value.trim();
           });
@@ -52,6 +53,7 @@ export default function PlanBudget() {
         //     });
         // });
         setCsvData(result);
+        console.log(result)
       };
       reader.readAsText(e.target.files[0]);
     } else {
